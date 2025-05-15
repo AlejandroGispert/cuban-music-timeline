@@ -1,0 +1,144 @@
+
+/* Theme Colors */
+:root {
+    /* Base Colors */
+    --cuba-red: #CC0000;
+    --cuba-blue: #002A8F;
+    --cuba-gold: #FFD700;
+    --cuba-terracotta: #E27D60;
+    --cuba-teal: #41B3A3;
+    --cuba-sand: #F8E9A1;
+    --cuba-navy: #25283D;
+    
+    /* UI Element Colors */
+    --bg-primary: hsl(40 33% 98%);
+    --bg-secondary: hsl(0 0% 100%);
+    --text-primary: hsl(222.2 84% 4.9%);
+    --text-secondary: hsl(215.4 16.3% 46.9%);
+    --border-light: hsl(214.3 31.8% 91.4%);
+    
+    /* Timeline Specific Colors */
+    --timeline-line: var(--cuba-blue);
+    --timeline-dot: var(--cuba-red);
+    --timeline-card-bg: var(--bg-secondary);
+    
+    /* Map Specific Colors */
+    --map-marker: var(--cuba-red);
+    --map-popup-bg: var(--bg-secondary);
+    
+    /* Interaction States */
+    --hover-primary: hsl(10 80% 40% / 0.8);
+    --active-primary: hsl(10 80% 40% / 0.9);
+    --focus-ring: hsl(217 71% 53% / 0.5);
+  }
+  
+  /* Dark Mode Theme */
+  .dark {
+    --bg-primary: hsl(222.2 84% 4.9%);
+    --bg-secondary: hsl(222.2 84% 4.9%);
+    --text-primary: hsl(210 40% 98%);
+    --text-secondary: hsl(215 20.2% 65.1%);
+    --border-light: hsl(217.2 32.6% 17.5%);
+    
+    /* Timeline Specific Colors in Dark Mode */
+    --timeline-line: var(--cuba-blue);
+    --timeline-dot: var(--cuba-red);
+    --timeline-card-bg: hsl(222.2 84% 6.9%);
+    
+    /* Map Specific Colors in Dark Mode */
+    --map-popup-bg: hsl(222.2 84% 6.9%);
+  }
+  
+  /* Typography Styles */
+  :root {
+    --font-primary: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-heading: 'Georgia', serif;
+    --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    
+    --font-size-xs: 0.75rem;   /* 12px */
+    --font-size-sm: 0.875rem;  /* 14px */
+    --font-size-base: 1rem;    /* 16px */
+    --font-size-lg: 1.125rem;  /* 18px */
+    --font-size-xl: 1.25rem;   /* 20px */
+    --font-size-2xl: 1.5rem;   /* 24px */
+    --font-size-3xl: 1.875rem; /* 30px */
+    --font-size-4xl: 2.25rem;  /* 36px */
+    
+    --line-height-tight: 1.25;
+    --line-height-normal: 1.5;
+    --line-height-loose: 1.75;
+  }
+  
+  /* Spacing System */
+  :root {
+    --space-1: 0.25rem;   /* 4px */
+    --space-2: 0.5rem;    /* 8px */
+    --space-3: 0.75rem;   /* 12px */
+    --space-4: 1rem;      /* 16px */
+    --space-5: 1.25rem;   /* 20px */
+    --space-6: 1.5rem;    /* 24px */
+    --space-8: 2rem;      /* 32px */
+    --space-10: 2.5rem;   /* 40px */
+    --space-12: 3rem;     /* 48px */
+    --space-16: 4rem;     /* 64px */
+    --space-20: 5rem;     /* 80px */
+  }
+  
+  /* Shadows */
+  :root {
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  }
+  
+  /* Borders */
+  :root {
+    --radius-sm: 0.125rem; /* 2px */
+    --radius: 0.25rem;     /* 4px */
+    --radius-md: 0.375rem; /* 6px */
+    --radius-lg: 0.5rem;   /* 8px */
+    --radius-xl: 0.75rem;  /* 12px */
+    --radius-2xl: 1rem;    /* 16px */
+    --radius-full: 9999px;
+  }
+  
+  /* Transitions */
+  :root {
+    --transition-fast: 150ms;
+    --transition-normal: 250ms;
+    --transition-slow: 350ms;
+    --transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-in: cubic-bezier(0.0, 0, 0.2, 1);
+    --transition-out: cubic-bezier(0.4, 0, 1, 1);
+  }
+  
+  /* Z-index scale */
+  :root {
+    --z-0: 0;
+    --z-10: 10;
+    --z-20: 20;
+    --z-30: 30;
+    --z-40: 40;
+    --z-50: 50;
+    --z-auto: auto;
+  }
+  
+  /* Apply CSS Variables to base elements */
+  body {
+    font-family: var(--font-primary);
+    line-height: var(--line-height-normal);
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    line-height: var(--line-height-tight);
+  }
+  
+  code, pre {
+    font-family: var(--font-mono);
+  }
+  

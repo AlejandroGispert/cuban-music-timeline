@@ -1,0 +1,184 @@
+
+
+/* Vertical Timeline CSS */
+.timeline-line {
+    @apply w-0.5 bg-cuba-blue/30 absolute h-full left-6 sm:left-1/2 transform -translate-x-1/2;
+  }
+  
+  .timeline-dot {
+    @apply w-4 h-4 rounded-full bg-cuba-red absolute left-6 sm:left-1/2 transform -translate-x-1/2 z-10 border-2 border-white;
+  }
+  
+  .timeline-dot::before {
+    content: '';
+    @apply absolute w-8 h-8 bg-cuba-red/20 rounded-full -left-2 -top-2 animate-pulse-subtle;
+  }
+  
+  .timeline-item {
+    @apply w-full sm:w-1/2 mb-8 opacity-0;
+    animation-fill-mode: both;
+    animation-delay: calc(var(--delay) * 100ms);
+  }
+  
+  .timeline-item-left {
+    @apply pl-12 sm:pl-0 sm:pr-12 sm:ml-auto;
+  }
+  
+  .timeline-item-right {
+    @apply pl-12 sm:pr-0 sm:pl-12;
+  }
+  
+  /* Horizontal Timeline CSS */
+  .horizontal-timeline-line {
+    @apply h-1 bg-cuba-blue absolute w-full top-1/2 transform -translate-y-1/2 left-0 right-0 z-0;
+  }
+  
+  .horizontal-timeline-content {
+    @apply py-12;
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05);
+  }
+  
+  .horizontal-timeline-content::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .horizontal-timeline-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+  }
+  
+  .horizontal-timeline-content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+  }
+  
+  .horizontal-timeline-item {
+    @apply relative flex flex-col items-center px-4;
+    min-width: 160px; /* Reduced from 200px to 160px to make cards narrower */
+    max-width: 180px; /* Reduced from 250px to 180px to prevent stretching */
+    flex: 0 0 auto;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .horizontal-timeline-content.zoomed-out {
+    @apply py-4;
+  }
+  
+  .horizontal-timeline-item.zoomed-out {
+    min-width: 80px;
+    max-width: 100px;
+    @apply px-1;
+  }
+  
+  .timeline-above {
+    @apply items-center pb-32 pt-0 mt-0;
+  }
+  
+  .timeline-below {
+    @apply items-center pt-32 pb-0 mt-0;
+  }
+  
+  .horizontal-timeline-item.zoomed-out.timeline-above {
+    @apply pb-10;
+  }
+  
+  .horizontal-timeline-item.zoomed-out.timeline-below {
+    @apply pt-10;
+  }
+  
+  .horizontal-timeline-dot {
+    @apply w-4 h-4 rounded-full bg-cuba-red absolute top-1/2 transform -translate-y-1/2 z-10 border-2 border-white;
+  }
+  
+  .horizontal-timeline-dot::before {
+    content: '';
+    @apply absolute w-8 h-8 bg-cuba-red/20 rounded-full -left-2 -top-2 animate-pulse-subtle;
+  }
+  
+  /* Add year label styling */
+  .year-label {
+    @apply text-xs font-semibold transition-all duration-300;
+  }
+  
+  .year-label.zoomed-out {
+    @apply text-[10px];
+  }
+  
+  .timeline-card {
+    @apply w-full transition-all duration-300;
+    max-width: 160px; /* Reduced from 220px to 160px */
+    max-height: 150px; /* Default collapsed height */
+    overflow: hidden;
+  }
+  
+  .timeline-card.collapsed {
+    max-height: 150px;
+  }
+  
+  .timeline-card.expanded {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .timeline-card.zoomed-out {
+    max-width: 90px;
+    max-height: 40px;
+    @apply shadow-sm border border-cuba-blue/20;
+  }
+  
+  .timeline-card-above {
+    @apply mb-10;
+  }
+  
+  .timeline-card-below {
+    @apply mt-10;
+  }
+  
+  .timeline-card-above.zoomed-out {
+    @apply mb-2;
+  }
+  
+  .timeline-card-below.zoomed-out {
+    @apply mt-2;
+  }
+  
+  /* Video preview styles */
+  .video-preview-container {
+    @apply relative overflow-hidden rounded-md;
+  }
+  
+  .video-preview-overlay {
+    @apply absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 transition-opacity duration-300;
+  }
+  
+  .video-preview-container:hover .video-preview-overlay {
+    @apply opacity-100;
+  }
+  
+  /* Zoom level indicator */
+  .zoom-indicator {
+    @apply fixed bottom-4 right-4 bg-white/80 shadow-sm rounded-full px-2 py-0.5 flex items-center gap-1.5 z-20 transition-opacity duration-300;
+    opacity: 0.5;
+  }
+  
+  .zoom-indicator:hover {
+    opacity: 0.9;
+  }
+  
+  .zoom-slider-container {
+    @apply fixed bottom-4 right-16 bg-white/90 shadow-sm rounded-lg py-1.5 px-3 flex items-center gap-2 z-20 transition-all duration-300;
+    transform-origin: right;
+    transform: scaleX(0);
+    opacity: 0;
+    width: 160px;
+  }
+  
+  .zoom-slider-container.open {
+    transform: scaleX(1);
+    opacity: 0.9;
+  }
+  

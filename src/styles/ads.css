@@ -1,0 +1,61 @@
+
+
+/* Ad containers */
+.ad-container {
+    background-color: #f9f9f9;
+    border: 2px dashed #e2e8f0;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .ad-container:hover {
+    border-color: #d1d5db;
+    background-color: #f3f4f6;
+  }
+  
+  .ad-leaderboard {
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .ad-square {
+    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .ad-large {
+    min-height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px dashed #FFD700;
+  }
+  
+  /* Carousel custom styles */
+  .embla__slide {
+    flex: 0 0 100%;
+    min-width: 0;
+    padding-left: 1rem;
+  }
+  
+  @media (min-width: 768px) {
+    .embla__slide {
+      flex: 0 0 50%;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .embla__slide {
+      flex: 0 0 33.33%;
+    }
+  }
+  
+  

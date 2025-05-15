@@ -1,0 +1,95 @@
+// components/CubaMap.tsx
+
+import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import { allProvinces, timelineEvents } from "@/data/events";
+import type { FeatureCollection } from "geojson";
+import rawData from "@/data/cuba-provinces.json"; // Your GeoJSON data
+const provinceGeoJson = rawData as FeatureCollection;
+import { LeafletMouseEvent, Layer, Path} from "leaflet";
+import { GeoJsonObject, Feature, Geometry } from "geojson";
+import { GeoJSON as LeafletGeoJSON } from "leaflet";
+
+
+
+const getProvinceColor = (count: number) => {
+  if (count > 30) return "#800026";
+  if (count > 20) return "#BD0026";
+  if (count > 10) return "#E31A1C";
+  if (count > 5) return "#FC4E2A";
+  if (count > 0) return "#FD8D3C";
+  return "#FFEDA0";
+};
+
+const CubaMap = () => {
+  const navigate = useNavigate();
+
+  const eventCounts: Record<string, number> = {};
+  allProvinces.forEach(province => {
+    eventCounts[province] = timelineEvents.filter(
+      event => event.location.province === province
+    ).length;
+  });
+
+  const onEachFeature = (feature: Feature<Geometry, { province: string }>, layer: Layer) => {
+    const provinceName = feature.properties.province;
+    const count = eventCounts[provinceName] || 0;
+
+    layer.setStyle({
+      fillColor: getProvinceColor(count),
+      weight: 2,
+      opacity: 1,
+      color: "white",
+      dashArray: "3",
+      fillOpacity: 0.7,
+    });
+
+    layer.on({
+      mouseover: (e: LeafletMouseEvent) => {
+        const layer = e.target;
+        layer.setStyle({
+          weight: 3,
+          color: "green",
+          fillOpacity: 0.9,
+        });
+        layer.bindTooltip(
+          `<strong>${provinceName}</strong><br>${count} musical events`,
+          { sticky: true }
+        ).openTooltip();
+      },
+      mouseout: (e: LeafletMouseEvent) => {
+        geoJsonRef.current?.resetStyle(e.target);
+      },
+      click: () => {
+        navigate(`/?province=${provinceName}`);
+      },
+    });
+  };
+
+ 
+  const geoJsonRef = useRef<LeafletGeoJSON | null>(null);
+  return (
+    <div className="w-full h-[500px] rounded-lg overflow-hidden shadow-md">
+      <MapContainer
+        center={[21.7, -79.5]}
+        zoom={6.5}
+        style={{ height: "100%", width: "100%" }}
+        scrollWheelZoom={true}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <GeoJSON
+          ref={geoJsonRef}
+          data={provinceGeoJson}
+          onEachFeature={onEachFeature}
+        />
+      </MapContainer>
+    </div>
+  );
+};
+
+export default CubaMap;
