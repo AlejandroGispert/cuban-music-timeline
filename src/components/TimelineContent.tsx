@@ -60,8 +60,10 @@ const TimelineContent = ({
   return (
     <div className="relative min-h-[300px] w-full px-4">
       {/* Timeline center line */}
-      <div className="absolute top-1/2 left-0 w-full h-[2px] bg-gray-300 z-0" />
-
+      <div
+        className="absolute left-0 w-full h-[2px] bg-gray-300 z-0"
+        style={{ top: expandedEvent ? "35%" : "50%" }}
+      />
       {/* Scroll container with drag support */}
       <div
         ref={scrollContainerRef}
@@ -91,13 +93,15 @@ const TimelineContent = ({
             />
 
             {/* Dot on timeline line */}
-            <div
-              className={`w-3 h-3 rounded-full bg-gray-400 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20`}
-              style={{
-                top: index % 2 === 0 ? "132px" : "12px", // Higher dot when card is below
-                pointerEvents: "none",
-              }}
-            />
+            {expandedEvent !== event.id && (
+              <div
+                className="w-3 h-3 rounded-full bg-gray-400 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
+                style={{
+                  top: index % 2 === 0 ? "132px" : "12px", // Higher dot when card is below
+                  pointerEvents: "none",
+                }}
+              />
+            )}
           </div>
         ))}
       </div>
