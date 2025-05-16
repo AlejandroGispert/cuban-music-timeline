@@ -19,71 +19,100 @@ interface TimelineEventProps {
   veryZoomedOut?: boolean;
 }
 
-const TimelineEvent = ({ 
-  event, 
-  index, 
-  isLeft, 
-  isExpanded, 
-  onToggleExpand, 
+const TimelineEvent = ({
+  event,
+  index,
+  isLeft,
+  isExpanded,
+  onToggleExpand,
   zoomedOut = false,
-  veryZoomedOut = false
+  veryZoomedOut = false,
 }: TimelineEventProps) => {
-  // Helper function to extract YouTube video ID
+  const dragStartX = useRef<number | null>(null);
+  const dragging = useRef(false);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    dragging.current = true;
+    dragStartX.current = e.clientX;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!dragging.current || dragStartX.current === null) return;
+
+    const dx = e.clientX - dragStartX.current;
+    const container = e.currentTarget.closest(".scroll-container") as HTMLElement | null;
+    if (container) {
+      container.scrollLeft -= dx;
+    }
+
+    dragStartX.current = e.clientX;
+  };
+
+  const handleMouseUp = () => {
+    dragging.current = false;
+    dragStartX.current = null;
+  };
+
+  // Helper function to extract YouTube ID
   const getYoutubeId = (url?: string) => {
     if (!url) return null;
-    
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
-    
-    return (match && match[2].length === 11) ? match[2] : null;
+    return match && match[2].length === 11 ? match[2] : null;
   };
 
   const youtubeId = getYoutubeId(event.videoUrl);
-  
+
   const handleVideoClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent event bubbling
+    e.stopPropagation();
     if (event.videoUrl) {
-      window.open(event.videoUrl, '_blank');
+      window.open(event.videoUrl, "_blank");
     }
   };
-  
+
   if (veryZoomedOut) {
     return <MinimalEventDot isLeft={isLeft} onToggleExpand={onToggleExpand} title={event.title} />;
   }
-  
+
   return (
-    <Card 
-      className={`timeline-card ${isExpanded ? 'expanded' : 'collapsed'} ${isLeft ? 'timeline-card-above' : 'timeline-card-below'} ${zoomedOut ? 'zoomed-out' : ''} transition-all duration-300 ease-in-out cursor-pointer w-full`}
+    <Card
+      className={`timeline-card ${isExpanded ? "expanded" : "collapsed"} ${
+        isLeft ? "timeline-card-above" : "timeline-card-below"
+      } ${zoomedOut ? "zoomed-out" : ""} transition-all duration-300 ease-in-out cursor-pointer w-full`}
       onClick={zoomedOut ? undefined : onToggleExpand}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
     >
       {zoomedOut ? (
         <CompactEventCard title={event.title} />
       ) : (
         <>
-          <DetailedEventHeader 
-            title={event.title} 
-            date={event.date} 
-            city={event.location.city} 
-            province={event.location.province} 
+          <DetailedEventHeader
+            title={event.title}
+            date={event.date}
+            city={event.location.city}
+            province={event.location.province}
           />
-          
-          <ExpandedEventContent 
+
+          <ExpandedEventContent
             description={event.description}
             youtubeId={youtubeId}
             title={event.title}
             onVideoClick={handleVideoClick}
             isExpanded={isExpanded}
           />
-          
+
           <CardFooter className="pt-0 flex flex-wrap gap-1 p-3">
             <EventStyleBadges styles={event.style} />
-            
-            <Button 
-              variant="ghost" 
-              size="sm" 
+
+            <Button
+              variant="ghost"
+              size="sm"
               className="ml-auto text-cuba-blue hover:text-cuba-blue hover:bg-cuba-blue/10 p-1 h-6"
-              onClick={(e) => {
-                e.stopPropagation(); 
+              onClick={e => {
+                e.stopPropagation();
                 onToggleExpand();
               }}
             >

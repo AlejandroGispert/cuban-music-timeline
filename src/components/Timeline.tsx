@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { TimelineEvent as TimelineEventType, FilterOptions } from "@/types";
 
 import TimelineHeader from "./TimelineHeader";
@@ -8,20 +8,18 @@ import TimelineZoomControls from "./TimelineZoomControls";
 import { useHistoricEvents } from "@/hooks/useHistoricEvents";
 import { yearRange } from "@/constants/filters";
 
-
-
 const Timeline = () => {
   const { events, loadEvents, isLoading, error } = useHistoricEvents();
 
-  const [filteredEvents, setFilteredEvents] = useState<TimelineEventType[]>([]);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     styles: [],
-    yearRange: yearRange,
+    yearRange,
     provinces: [],
     cities: [],
   });
+
   const [expandedEvent, setExpandedEvent] = useState<string | null>(null);
-  const [zoomLevel, setZoomLevel] = useState<number>(50); // 0-100 scale
+  const [zoomLevel, setZoomLevel] = useState<number>(50);
 
   const zoomedOut = zoomLevel < 30;
   const veryZoomedOut = zoomLevel < 10;
@@ -31,38 +29,35 @@ const Timeline = () => {
     loadEvents();
   }, []);
 
-  // Filter events whenever events or filters change
-  useEffect(() => {
-    if (!events || events.length === 0) return;
+  const filteredEvents = useMemo(() => {
+    if (!events || events.length === 0) return [];
 
-    const result = events.filter((event) => {
-      if (
-        filterOptions.styles.length > 0 &&
-        !event.style.some((style) => filterOptions.styles.includes(style))
-      ) return false;
+    return events
+      .filter(event => {
+        if (
+          filterOptions.styles.length > 0 &&
+          !event.style.some(style => filterOptions.styles.includes(style))
+        )
+          return false;
 
-      if (
-        event.year < filterOptions.yearRange[0] ||
-        event.year > filterOptions.yearRange[1]
-      ) return false;
+        if (event.year < filterOptions.yearRange[0] || event.year > filterOptions.yearRange[1])
+          return false;
 
-      if (
-        filterOptions.provinces.length > 0 &&
-        !filterOptions.provinces.includes(event.location.province)
-      ) return false;
+        if (
+          filterOptions.provinces.length > 0 &&
+          !filterOptions.provinces.includes(event.location.province)
+        )
+          return false;
 
-      if (
-        filterOptions.cities.length > 0 &&
-        !filterOptions.cities.includes(event.location.city)
-      ) return false;
+        if (filterOptions.cities.length > 0 && !filterOptions.cities.includes(event.location.city))
+          return false;
 
-      return true;
-    });
-
-    result.sort((a, b) => a.year - b.year);
-    setFilteredEvents(result);
+        return true;
+      })
+      .sort((a, b) => a.year - b.year);
   }, [events, filterOptions]);
 
+  // Collapse cards on zoom out
   useEffect(() => {
     if (veryZoomedOut && expandedEvent) {
       setExpandedEvent(null);
@@ -75,28 +70,25 @@ const Timeline = () => {
 
   const toggleExpand = (eventId: string) => {
     if (veryZoomedOut) return;
-    setExpandedEvent((current) => (current === eventId ? null : eventId));
+    setExpandedEvent(current => (current === eventId ? null : eventId));
   };
 
   const handleZoomChange = (value: number[]) => {
     setZoomLevel(value[0]);
   };
 
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     setFilterOptions({
       styles: [],
-      yearRange: yearRange,
+      yearRange,
       provinces: [],
       cities: [],
     });
-  };
+  }, []);
 
   return (
     <div className="container mx-auto px-4">
-      <TimelineHeader
-        filterOptions={filterOptions}
-        onFilterChange={handleFilterChange}
-      />
+      <TimelineHeader filterOptions={filterOptions} onFilterChange={handleFilterChange} />
 
       <div className="relative pt-16 pb-20">
         {isLoading ? (
@@ -111,13 +103,11 @@ const Timeline = () => {
             zoomedOut={zoomedOut}
             veryZoomedOut={veryZoomedOut}
             resetFilters={resetFilters}
+            zoomLevel={zoomLevel}
           />
         )}
 
-        <TimelineZoomControls
-          zoomLevel={zoomLevel}
-          onZoomChange={handleZoomChange}
-        />
+        <TimelineZoomControls zoomLevel={zoomLevel} onZoomChange={handleZoomChange} />
       </div>
     </div>
   );
