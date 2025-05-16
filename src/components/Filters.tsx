@@ -16,7 +16,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { FilterOptions } from "@/types";
-import { allMusicStyles, allProvinces, allCities, yearRange } from "@/data/events";
+import { yearRange, allMusicStyles, allProvinces, allCities } from "@/constants/filters";
+
 
 interface FiltersProps {
   filterOptions: FilterOptions;
@@ -38,30 +39,25 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
   };
 
   const handleProvinceChange = (province: string) => {
-    if (province === "all") {
-      const newFilters = { ...localFilters, provinces: [] };
-      setLocalFilters(newFilters);
-      onFilterChange(newFilters);
-      return;
-    }
-    
-    const newFilters = { ...localFilters, provinces: [province] };
+    const newFilters = {
+      ...localFilters,
+      provinces: province === "all" ? [] : [province],
+    };
     setLocalFilters(newFilters);
     onFilterChange(newFilters);
   };
 
+
+
   const handleCityChange = (city: string) => {
-    if (city === "all") {
-      const newFilters = { ...localFilters, cities: [] };
-      setLocalFilters(newFilters);
-      onFilterChange(newFilters);
-      return;
-    }
-    
-    const newFilters = { ...localFilters, cities: [city] };
+    const newFilters = {
+      ...localFilters,
+      cities: city === "all" ? [] : [city],
+    };
     setLocalFilters(newFilters);
     onFilterChange(newFilters);
   };
+  
 
   const handleYearChange = (value: number[]) => {
     const newFilters = { ...localFilters, yearRange: [value[0], value[1]] as [number, number] };
@@ -72,7 +68,7 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
   const resetFilters = () => {
     const resetFilters = {
       styles: [],
-      yearRange: yearRange,
+      yearRange: [...yearRange] as [number, number],
       provinces: [],
       cities: []
     };

@@ -3,7 +3,7 @@ import { Card, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { TimelineEvent as TimelineEventType } from "@/types";
-import MinimalEventDot from "./timeline/MinimalEventDot";
+import MinimalEventDot from "./timeline/MinimalEventdot";
 import CompactEventCard from "./timeline/CompactEventCard";
 import DetailedEventHeader from "./timeline/DetailedEventHeader";
 import ExpandedEventContent from "./timeline/ExpandedEventContent";

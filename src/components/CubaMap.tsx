@@ -1,18 +1,21 @@
 // components/CubaMap.tsx
-
-import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import { allProvinces, timelineEvents } from "@/data/events";
-import type { FeatureCollection } from "geojson";
-import rawData from "@/data/cuba-provinces.json"; // Your GeoJSON data
-const provinceGeoJson = rawData as FeatureCollection;
-import { LeafletMouseEvent, Layer, Path} from "leaflet";
-import { GeoJsonObject, Feature, Geometry } from "geojson";
+import type { MapContainerProps } from "react-leaflet";
+import type { FeatureCollection, Feature, Geometry } from "geojson";
+import { LeafletMouseEvent, Layer } from "leaflet";
 import { GeoJSON as LeafletGeoJSON } from "leaflet";
+import { useNavigate } from "react-router-dom";
 
+import "leaflet/dist/leaflet.css";
+import rawData from "@/data/cuba-provinces.json";
 
+const provinceGeoJson = rawData as FeatureCollection;
+
+interface CubaMapProps {
+  eventCounts: Record<string, number>;
+  onProvinceClick?: (province: string) => void;
+}
 
 const getProvinceColor = (count: number) => {
   if (count > 30) return "#800026";
@@ -23,15 +26,13 @@ const getProvinceColor = (count: number) => {
   return "#FFEDA0";
 };
 
-const CubaMap = () => {
+const CubaMap = ({ eventCounts, onProvinceClick }: CubaMapProps) => {
+  const geoJsonRef = useRef<LeafletGeoJSON | null>(null);
   const navigate = useNavigate();
 
-  const eventCounts: Record<string, number> = {};
-  allProvinces.forEach(province => {
-    eventCounts[province] = timelineEvents.filter(
-      event => event.location.province === province
-    ).length;
-  });
+  const mapRef = useRef<any>(null);
+const lastClickedRef = useRef<{ province: string | null }>({ province: null });
+
 
   const onEachFeature = (feature: Feature<Geometry, { province: string }>, layer: Layer) => {
     const provinceName = feature.properties.province;
@@ -47,46 +48,55 @@ const CubaMap = () => {
     });
 
     layer.on({
-      mouseover: (e: LeafletMouseEvent) => {
-        const layer = e.target;
+      mouseover: () => {
+       
         layer.setStyle({
           weight: 3,
           color: "green",
           fillOpacity: 0.9,
         });
-        layer.bindTooltip(
-          `<strong>${provinceName}</strong><br>${count} musical events`,
-          { sticky: true }
-        ).openTooltip();
+        layer
+          .bindTooltip(`<strong>${provinceName}</strong><br>${count} musical events`, {
+            sticky: true,
+          })
+          .openTooltip();
       },
-      mouseout: (e: LeafletMouseEvent) => {
-        geoJsonRef.current?.resetStyle(e.target);
+      mouseout: function (){
+        geoJsonRef.current?.resetStyle(layer);
       },
       click: () => {
-        navigate(`/?province=${provinceName}`);
+        const map = mapRef.current;
+        if (!map) return;
+      
+        if (lastClickedRef.current.province === provinceName) {
+          // Navigate on second click
+          navigate(`/?province=${provinceName}`);
+        } else {
+          // Zoom to province bounds on first click
+          const bounds = layer.getBounds?.();
+          if (bounds && map.fitBounds) {
+            map.fitBounds(bounds);
+          }
+          lastClickedRef.current.province = provinceName;
+        }
       },
     });
   };
 
- 
-  const geoJsonRef = useRef<LeafletGeoJSON | null>(null);
   return (
     <div className="w-full h-[500px] rounded-lg overflow-hidden shadow-md">
       <MapContainer
         center={[21.7, -79.5]}
         zoom={6.5}
-        style={{ height: "100%", width: "100%" }}
         scrollWheelZoom={true}
+        whenCreated={(mapInstance) => { mapRef.current = mapInstance; }}
+        style={{ height: "100%", width: "100%" }}
       >
         <TileLayer
-          attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
         />
-        <GeoJSON
-          ref={geoJsonRef}
-          data={provinceGeoJson}
-          onEachFeature={onEachFeature}
-        />
+        <GeoJSON ref={geoJsonRef} data={provinceGeoJson} onEachFeature={onEachFeature} />
       </MapContainer>
     </div>
   );

@@ -8,14 +8,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { timelineEvents, allMusicStyles } from "@/data/events";
+import { useHistoricEvents } from "@/hooks/useHistoricEvents";
 import { TimelineEvent } from "@/types";
 import { X, Plus, UserRoundPlus, FolderPlus } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 
 const AdminPage = () => {
   const navigate = useNavigate();
-  const [events, setEvents] = useState<TimelineEvent[]>(timelineEvents);
+  const { events, createEvent, loadEvents } = useHistoricEvents();
+  
   const [newEvent, setNewEvent] = useState<Partial<TimelineEvent>>({
     id: crypto.randomUUID(),
     title: "",
@@ -72,7 +73,7 @@ const AdminPage = () => {
     });
   };
 
-  const handleAddEvent = () => {
+  const handleAddEvent = async () => {
     // Validate required fields
     if (!newEvent.title || !newEvent.date || !newEvent.description || !newEvent.location?.city || !newEvent.location?.province || !newEvent.style?.length) {
       toast({
@@ -84,9 +85,8 @@ const AdminPage = () => {
     }
 
     // Add the new event
-    const updatedEvents = [...events, newEvent as TimelineEvent];
-    setEvents(updatedEvents);
-    
+    const saved = await createEvent(newEvent as Omit<TimelineEvent, "id">);
+    if (!saved) return; // exit early if save failed
     // Show success message
     toast({
       title: "Event Added",
