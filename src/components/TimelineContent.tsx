@@ -92,8 +92,11 @@ const TimelineContent = ({
 
             {/* Dot on timeline line */}
             <div
-              className="w-3 h-3 rounded-full bg-gray-700 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
-              style={{ pointerEvents: "none" }}
+              className={`w-3 h-3 rounded-full bg-gray-400 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20`}
+              style={{
+                top: index % 2 === 0 ? "132px" : "12px", // Higher dot when card is below
+                pointerEvents: "none",
+              }}
             />
           </div>
         ))}
