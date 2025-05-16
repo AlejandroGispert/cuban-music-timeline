@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { TimelineEvent as TimelineEventType, FilterOptions } from "@/types";
 
 import TimelineHeader from "./TimelineHeader";
@@ -13,7 +13,7 @@ const Timeline = () => {
 
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     styles: [],
-    yearRange,
+    yearRange: yearRange,
     provinces: [],
     cities: [],
   });
@@ -24,11 +24,12 @@ const Timeline = () => {
   const zoomedOut = zoomLevel < 30;
   const veryZoomedOut = zoomLevel < 10;
 
-  // Load events once
+  // Load events only once
   useEffect(() => {
     loadEvents();
   }, []);
 
+  // Memoized filtered & sorted events
   const filteredEvents = useMemo(() => {
     if (!events || events.length === 0) return [];
 
@@ -36,19 +37,20 @@ const Timeline = () => {
       .filter(event => {
         if (
           filterOptions.styles.length > 0 &&
-          !event.style.some(style => filterOptions.styles.includes(style))
+          (!Array.isArray(event.style) ||
+            !event.style.some(style => filterOptions.styles.includes(style)))
         )
           return false;
-
+        //year range should have two sliders to chose a range properly
         if (event.year < filterOptions.yearRange[0] || event.year > filterOptions.yearRange[1])
           return false;
-
+        //this one is working good, provinces
         if (
           filterOptions.provinces.length > 0 &&
           !filterOptions.provinces.includes(event.location.province)
         )
           return false;
-
+        //this one is working good, cities
         if (filterOptions.cities.length > 0 && !filterOptions.cities.includes(event.location.city))
           return false;
 
@@ -57,7 +59,7 @@ const Timeline = () => {
       .sort((a, b) => a.year - b.year);
   }, [events, filterOptions]);
 
-  // Collapse cards on zoom out
+  // Collapse expanded card if very zoomed out
   useEffect(() => {
     if (veryZoomedOut && expandedEvent) {
       setExpandedEvent(null);
@@ -70,21 +72,21 @@ const Timeline = () => {
 
   const toggleExpand = (eventId: string) => {
     if (veryZoomedOut) return;
-    setExpandedEvent(current => (current === eventId ? null : eventId));
+    setExpandedEvent(prev => (prev === eventId ? null : eventId));
   };
 
   const handleZoomChange = (value: number[]) => {
     setZoomLevel(value[0]);
   };
 
-  const resetFilters = useCallback(() => {
+  const resetFilters = () => {
     setFilterOptions({
       styles: [],
-      yearRange,
+      yearRange: yearRange,
       provinces: [],
       cities: [],
     });
-  }, []);
+  };
 
   return (
     <div className="container mx-auto px-4">
@@ -103,7 +105,6 @@ const Timeline = () => {
             zoomedOut={zoomedOut}
             veryZoomedOut={veryZoomedOut}
             resetFilters={resetFilters}
-            zoomLevel={zoomLevel}
           />
         )}
 

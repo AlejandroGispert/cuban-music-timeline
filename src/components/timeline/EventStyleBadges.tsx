@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 
 interface EventStyleBadgesProps {
-  styles?: string[]; // Made optional to prevent crash if undefined
+  styles?: string[];
 }
 
 const EventStyleBadges = ({ styles }: EventStyleBadgesProps) => {

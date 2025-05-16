@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import {
@@ -17,7 +16,7 @@ import {
 } from "@/components/ui/accordion";
 import { FilterOptions } from "@/types";
 import { yearRange, allMusicStyles, allProvinces, allCities } from "@/constants/filters";
-
+import React from "react";
 
 interface FiltersProps {
   filterOptions: FilterOptions;
@@ -27,12 +26,16 @@ interface FiltersProps {
 const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [localFilters, setLocalFilters] = useState<FilterOptions>(filterOptions);
-  
+
+  React.useEffect(() => {
+    setLocalFilters(filterOptions);
+  }, [filterOptions]);
+
   const handleStyleChange = (style: string) => {
     const updatedStyles = localFilters.styles.includes(style)
       ? localFilters.styles.filter(s => s !== style)
       : [...localFilters.styles, style];
-    
+
     const newFilters = { ...localFilters, styles: updatedStyles };
     setLocalFilters(newFilters);
     onFilterChange(newFilters);
@@ -47,8 +50,6 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
     onFilterChange(newFilters);
   };
 
-
-
   const handleCityChange = (city: string) => {
     const newFilters = {
       ...localFilters,
@@ -57,38 +58,36 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
     setLocalFilters(newFilters);
     onFilterChange(newFilters);
   };
-  
 
-  const handleYearChange = (value: number[]) => {
-    const newFilters = { ...localFilters, yearRange: [value[0], value[1]] as [number, number] };
-    setLocalFilters(newFilters);
-    onFilterChange(newFilters);
+  // Handle year range change from the slider with two thumbs
+  const handleYearChange = (values: number[]) => {
+    if (values.length === 2) {
+      const newFilters = { ...localFilters, yearRange: [values[0], values[1]] as [number, number] };
+      setLocalFilters(newFilters);
+      onFilterChange(newFilters);
+    }
   };
 
   const resetFilters = () => {
-    const resetFilters = {
+    const reset: FilterOptions = {
       styles: [],
-      yearRange: [...yearRange] as [number, number],
+      yearRange: [yearRange[0], yearRange[1]],
       provinces: [],
-      cities: []
+      cities: [],
     };
-    setLocalFilters(resetFilters);
-    onFilterChange(resetFilters);
+    setLocalFilters(reset);
+    onFilterChange(reset);
   };
 
   return (
     <div className="bg-white shadow rounded-lg mb-8">
       <div className="p-4 flex justify-between items-center">
         <h2 className="text-lg font-semibold text-gray-800">Filters</h2>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => setIsOpen(!isOpen)}
-        >
+        <Button variant="ghost" size="sm" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? "Close" : "Open"}
         </Button>
       </div>
-      
+
       {isOpen && (
         <div className="p-4 border-t">
           <Accordion type="single" collapsible className="w-full">
@@ -102,9 +101,7 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
                       variant={localFilters.styles.includes(style) ? "default" : "outline"}
                       size="sm"
                       onClick={() => handleStyleChange(style)}
-                      className={`text-xs ${
-                        localFilters.styles.includes(style) ? "bg-cuba-red" : ""
-                      }`}
+                      className={`text-xs ${localFilters.styles.includes(style) ? "bg-cuba-red" : ""}`}
                     >
                       {style}
                     </Button>
@@ -112,7 +109,7 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
                 </div>
               </AccordionContent>
             </AccordionItem>
-            
+
             <AccordionItem value="year-range">
               <AccordionTrigger className="text-sm font-medium">Year Range</AccordionTrigger>
               <AccordionContent>
@@ -122,7 +119,7 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
                     <span>{localFilters.yearRange[1]}</span>
                   </div>
                   <Slider
-                    defaultValue={[localFilters.yearRange[0], localFilters.yearRange[1]]}
+                    values={localFilters.yearRange}
                     min={yearRange[0]}
                     max={yearRange[1]}
                     step={1}
@@ -132,15 +129,15 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
                 </div>
               </AccordionContent>
             </AccordionItem>
-            
+
             <AccordionItem value="location">
               <AccordionTrigger className="text-sm font-medium">Location</AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 pt-2">
                   <div>
                     <label className="text-xs text-gray-500 mb-1 block">Province</label>
-                    <Select 
-                      value={localFilters.provinces[0] || "all"} 
+                    <Select
+                      value={localFilters.provinces[0] || "all"}
                       onValueChange={handleProvinceChange}
                     >
                       <SelectTrigger className="w-full">
@@ -149,16 +146,18 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
                       <SelectContent>
                         <SelectItem value="all">All Provinces</SelectItem>
                         {allProvinces.map(province => (
-                          <SelectItem key={province} value={province}>{province}</SelectItem>
+                          <SelectItem key={province} value={province}>
+                            {province}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div>
                     <label className="text-xs text-gray-500 mb-1 block">City</label>
-                    <Select 
-                      value={localFilters.cities[0] || "all"} 
+                    <Select
+                      value={localFilters.cities[0] || "all"}
                       onValueChange={handleCityChange}
                     >
                       <SelectTrigger className="w-full">
@@ -167,7 +166,9 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
                       <SelectContent>
                         <SelectItem value="all">All Cities</SelectItem>
                         {allCities.map(city => (
-                          <SelectItem key={city} value={city}>{city}</SelectItem>
+                          <SelectItem key={city} value={city}>
+                            {city}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -176,7 +177,7 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-          
+
           <div className="mt-4 flex justify-end">
             <Button variant="outline" size="sm" onClick={resetFilters}>
               Reset Filters
