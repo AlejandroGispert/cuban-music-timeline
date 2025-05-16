@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -19,7 +18,7 @@ const Footer = () => {
               Exploring the rich history of Cuban music through an interactive timeline.
             </p>
           </div>
-          
+
           <div>
             <h3 className="font-semibold mb-4">Navigation</h3>
             <ul className="space-y-2">
@@ -34,24 +33,26 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <button className="text-gray-600 hover:text-cuba-red text-sm">
-                  Support Us
-                </button>
+                <button className="text-gray-600 hover:text-cuba-red text-sm">Support Us</button>
               </li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="font-semibold mb-4">Disclaimer</h3>
             <p className="text-gray-500 text-xs leading-relaxed">
-              This project aims to be as accurate as possible, referencing books and input from Cuban music historians. 
-              If you spot an inaccuracy, please contact us at <a href="mailto:info@ritmocubano.example.com" className="text-cuba-blue hover:underline">info@ritmocubano.example.com</a> with 
-              evidence of your correction. We value historical integrity. Any advertisements are used solely to maintain and 
-              upgrade servers, and to cover the operational costs of running this site.
+              This project aims to be as accurate as possible, referencing books and input from
+              Cuban music historians. If you spot an inaccuracy, please contact us at{" "}
+              <a href="mailto:ritmocubano@gmail.com" className="text-cuba-blue hover:underline">
+                info@ritmocubano.example.com
+              </a>{" "}
+              with evidence of your correction. We value historical integrity. Any advertisements
+              are used solely to maintain and upgrade servers, and to cover the operational costs of
+              running this site.
             </p>
           </div>
         </div>
-        
+
         <div className="border-t mt-8 pt-6">
           <p className="text-gray-500 text-xs text-center">
             © {new Date().getFullYear()} Ritmo Cubano. All rights reserved.

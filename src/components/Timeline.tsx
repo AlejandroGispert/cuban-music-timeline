@@ -35,10 +35,15 @@ const Timeline = () => {
 
     return events
       .filter(event => {
+        const eventStyles = Array.isArray(event.style)
+          ? event.style
+          : typeof event.style === "string"
+            ? JSON.parse(event.style)
+            : [];
+
         if (
           filterOptions.styles.length > 0 &&
-          (!Array.isArray(event.style) ||
-            !event.style.some(style => filterOptions.styles.includes(style)))
+          !filterOptions.styles.some(style => eventStyles.includes(style))
         )
           return false;
         //year range should have two sliders to chose a range properly

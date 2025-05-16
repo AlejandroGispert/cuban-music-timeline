@@ -30,7 +30,7 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
   React.useEffect(() => {
     setLocalFilters(filterOptions);
   }, [filterOptions]);
-
+  //working fine
   const handleStyleChange = (style: string) => {
     const updatedStyles = localFilters.styles.includes(style)
       ? localFilters.styles.filter(s => s !== style)
@@ -40,7 +40,7 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
     setLocalFilters(newFilters);
     onFilterChange(newFilters);
   };
-
+  //working fine
   const handleProvinceChange = (province: string) => {
     const newFilters = {
       ...localFilters,
@@ -49,7 +49,7 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
     setLocalFilters(newFilters);
     onFilterChange(newFilters);
   };
-
+  //working fine
   const handleCityChange = (city: string) => {
     const newFilters = {
       ...localFilters,
@@ -83,7 +83,7 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
     <div className="bg-white shadow rounded-lg mb-8">
       <div className="p-4 flex justify-between items-center">
         <h2 className="text-lg font-semibold text-gray-800">Filters</h2>
-        <Button variant="ghost" size="sm" onClick={() => setIsOpen(!isOpen)}>
+        <Button variant="ghost" size="sm" className="ml-2" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? "Close" : "Open"}
         </Button>
       </div>

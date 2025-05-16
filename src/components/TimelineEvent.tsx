@@ -62,7 +62,11 @@ const TimelineEvent = ({
   };
 
   const youtubeId = getYoutubeId(event.videoUrl);
-
+  const stylesArray = Array.isArray(event.style)
+    ? event.style
+    : typeof event.style === "string"
+      ? [event.style]
+      : [];
   const handleVideoClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (event.videoUrl) {
@@ -92,6 +96,7 @@ const TimelineEvent = ({
           <DetailedEventHeader
             title={event.title}
             date={event.date}
+            style={stylesArray}
             city={event.location.city}
             province={event.location.province}
           />
