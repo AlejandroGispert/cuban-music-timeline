@@ -43,8 +43,11 @@ const Footer = () => {
             <p className="text-gray-500 text-xs leading-relaxed">
               This project aims to be as accurate as possible, referencing books and input from
               Cuban music historians. If you spot an inaccuracy, please contact us at{" "}
-              <a href="mailto:ritmoscubanos@gmail.com" className="text-cuba-blue hover:underline">
-                ritmoscubanos@gmail.com
+              <a
+                href="mailto:ritmoscubanosweb@gmail.com"
+                className="text-cuba-blue hover:underline"
+              >
+                ritmoscubanosweb@gmail.com
               </a>{" "}
               with evidence of your correction. We value historical integrity. Any advertisements
               are used solely to maintain and upgrade servers, and to cover the operational costs of
