@@ -1,0 +1,25 @@
+image: atlassian/default-image:2
+
+pipelines:
+  default:
+    - step:
+        name: Sync Bitbucket to GitHub
+        script:
+          - apt-get update
+          - apt-get install -y git
+          - git clone https://$BITBUCKET_USERNAME:$BITBUCKET_APP_PASSWORD@bitbucket.org/ag-sound/cuban-music-timeline.git
+          - git remote add github https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/AlejandroGispert/cuban-music-timeline.git
+          - git config user.email "alejandrobusiness2022@gmail.com"
+          - git config user.name "AlejandroGispert"
+          - git push github main --force
+
+  custom:
+    ping-supabase:
+      - step:
+          name: Ping Supabase
+          script:
+            - apt-get update && apt-get install -y curl
+            - >
+              curl -s https://yghnwhsajkpctoiwhqud.supabase.co/rest/v1/historic_events
+              -H "apikey: $SUPABASE_API_KEY"
+              -H "Authorization: Bearer $SUPABASE_API_KEY"
