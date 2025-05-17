@@ -1,4 +1,3 @@
-
 import { HistoricEvent, TimelineEvent } from "@/types";
 
 /**
@@ -25,7 +24,7 @@ export class HistoricEventModel {
       thumbnailUrl: event.thumbnail_url,
     };
   }
-  
+
   /**
    * Convert a frontend TimelineEvent to a backend HistoricEvent
    */
