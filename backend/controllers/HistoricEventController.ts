@@ -3,9 +3,6 @@ import { HistoricEventModel } from "../models/HistoricEventModel";
 import { supabase } from "../../integrations/supabase/client";
 
 export class HistoricEventController {
-  /**
-   * Fetch all historic events
-   */
   async getAllEvents(): Promise<ApiResponse<TimelineEvent[]>> {
     try {
       const { data, error } = await supabase.from("historic_events").select("*");
@@ -27,9 +24,6 @@ export class HistoricEventController {
     }
   }
 
-  /**
-   * Fetch a historic event by ID
-   */
   async getEventById(id: string): Promise<ApiResponse<TimelineEvent | null>> {
     try {
       const { data, error } = await supabase
@@ -53,12 +47,10 @@ export class HistoricEventController {
     }
   }
 
-  /**
-   * Create a new historic event
-   */
   async createEvent(event: TimelineEvent): Promise<ApiResponse<TimelineEvent>> {
     try {
-      const backendData = HistoricEventModel.fromTimelineEvent(event);
+      // Omit id so DB can auto-generate
+      const backendData = HistoricEventModel.fromTimelineEventWithoutId(event);
 
       const { data, error } = await supabase
         .from("historic_events")
@@ -84,11 +76,9 @@ export class HistoricEventController {
     }
   }
 
-  /**
-   * Update an existing historic event
-   */
   async updateEvent(id: string, event: TimelineEvent): Promise<ApiResponse<TimelineEvent>> {
     try {
+      // Include id for update
       const backendData = HistoricEventModel.fromTimelineEvent(event);
 
       const { data, error } = await supabase
@@ -110,9 +100,6 @@ export class HistoricEventController {
     }
   }
 
-  /**
-   * Delete a historic event
-   */
   async deleteEvent(id: string): Promise<ApiResponse<void>> {
     try {
       const { error } = await supabase.from("historic_events").delete().eq("id", id);

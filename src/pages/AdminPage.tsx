@@ -137,7 +137,7 @@ const AdminPage = () => {
       if (editingEventId) {
         // Update requires ID
         const backendPayload = HistoricEventModel.fromTimelineEvent(fullPayload);
-        await updateEvent(editingEventId, backendPayload);
+        await updateEvent(editingEventId.toString(), backendPayload);
         console.log("Updating event:", backendPayload);
         toast({ title: "Event Updated" });
       } else {
