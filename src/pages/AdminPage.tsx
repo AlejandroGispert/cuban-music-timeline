@@ -121,7 +121,7 @@ const AdminPage = () => {
     const stylesArray = Array.isArray(newEvent.style) ? newEvent.style : [newEvent.style];
 
     const fullPayload: TimelineEvent = {
-      id: undefined, // 0 or undefined if new, or assigned by backend
+      id: newEvent.id, // 0 or undefined if new, or assigned by backend
       title: newEvent.title!.trim(),
       date: newEvent.date!,
       year: newEvent.year!,
@@ -134,15 +134,18 @@ const AdminPage = () => {
     };
 
     try {
-      const backendPayload = HistoricEventModel.fromTimelineEvent(fullPayload);
-
       if (editingEventId) {
+        // Update requires ID
+        const backendPayload = HistoricEventModel.fromTimelineEvent(fullPayload);
+        await updateEvent(editingEventId, backendPayload);
         console.log("Updating event:", backendPayload);
-        await updateEvent(editingEventId.toString(), backendPayload);
         toast({ title: "Event Updated" });
       } else {
-        console.log("Creating event with payload:", backendPayload);
+        // Create omits ID, backend will generate it
+        const { id, ...payloadWithoutId } = fullPayload;
+        const backendPayload = HistoricEventModel.fromTimelineEventWithoutId(payloadWithoutId);
         await createEvent(backendPayload);
+        console.log("Creating event:", backendPayload);
         toast({ title: "Event Added" });
       }
 
@@ -332,29 +335,34 @@ const AdminPage = () => {
           <CardTitle className="text-2xl">Current Events ({events.length})</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {events.map(event => (
-            <div key={event.id} className="border p-4 rounded-md">
-              <div className="flex justify-between">
-                <div>
-                  <h3 className="font-semibold">{event.title}</h3>
-                  <p className="text-xs text-muted-foreground">
-                    {event.city}, {event.province} – {event.date}
-                  </p>
+          {events
+            .slice() // create a shallow copy so you don't mutate original array
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            .map(event => (
+              <div key={event.id} className="border p-4 rounded-md">
+                <div className="flex justify-between">
+                  <div>
+                    <h3 className="font-semibold">{event.title}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {event.city}
+                      {event.province}
+                      {new Date(event.date).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="space-x-2">
+                    <Button size="sm" onClick={() => handleEditEvent(event)}>
+                      Edit
+                    </Button>
+                    <Button size="sm" variant="destructive" onClick={() => confirmDelete(event.id)}>
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
                 </div>
-                <div className="space-x-2">
-                  <Button size="sm" onClick={() => handleEditEvent(event)}>
-                    Edit
-                  </Button>
-                  <Button size="sm" variant="destructive" onClick={() => confirmDelete(event.id)}>
-                    <Trash2 size={16} />
-                  </Button>
+                <div className="mt-2 flex flex-wrap gap-1 text-xs">
+                  <EventStyleBadges styles={event.style} />
                 </div>
               </div>
-              <div className="mt-2 flex flex-wrap gap-1 text-xs">
-                <EventStyleBadges styles={event.style} />
-              </div>
-            </div>
-          ))}
+            ))}
         </CardContent>
       </Card>
 

@@ -30,6 +30,21 @@ export class HistoricEventModel {
    */
   static fromTimelineEvent(event: TimelineEvent): HistoricEvent {
     return {
+      id: event.id,
+      title: event.title,
+      date: event.date,
+      year: event.year,
+      city: event.city,
+      province: event.province,
+      styles: event.style,
+      description: event.description,
+      video_url: event.videoUrl,
+      thumbnail_url: event.thumbnailUrl,
+    };
+  }
+
+  static fromTimelineEventWithoutId(event: Omit<TimelineEvent, "id">): Omit<HistoricEvent, "id"> {
+    return {
       title: event.title,
       date: event.date,
       year: event.year,
