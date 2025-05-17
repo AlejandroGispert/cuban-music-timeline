@@ -97,8 +97,8 @@ const TimelineEvent = ({
             title={event.title}
             date={event.date}
             style={stylesArray}
-            city={event.location.city}
-            province={event.location.province}
+            city={event.city}
+            province={event.province}
           />
 
           <ExpandedEventContent
