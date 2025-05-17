@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { TimelineEvent } from "@/types";
 import { HistoricEventController } from "../../backend/controllers/HistoricEventController.ts";
 
@@ -10,42 +9,54 @@ export function useHistoricEvents() {
   const [events, setEvents] = useState<TimelineEvent[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
+  // Use a ref to track if loadEvents is already running, preventing duplicate calls
+  const loadingRef = useRef(false);
+
   const controller = new HistoricEventController();
-  
+
   /**
    * Load all events from the API
    */
   const loadEvents = async () => {
+    // Prevent duplicate calls if already loading
+    if (loadingRef.current) {
+      return;
+    }
+
+    loadingRef.current = true;
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await controller.getAllEvents();
-      
+
       if (response.error) {
         setError(response.error);
       } else if (response.data) {
         setEvents(response.data);
       }
     } catch (err) {
-      setError('An unexpected error occurred');
-      console.error('Error loading events:', err);
+      setError("An unexpected error occurred");
+      console.error("Error loading events:", err);
     } finally {
       setIsLoading(false);
+      loadingRef.current = false;
     }
   };
-  
+
   /**
    * Create a new event
    */
-  const createEvent = async (event: Omit<TimelineEvent, 'id'>): Promise<TimelineEvent | null> => {
+  const createEvent = async (event: Omit<TimelineEvent, "id">): Promise<TimelineEvent | null> => {
+    if (isLoading) return null; // Optional: prevent concurrent creates
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await controller.createEvent(event);
-      
+
       if (response.error) {
         setError(response.error);
         return null;
@@ -53,27 +64,29 @@ export function useHistoricEvents() {
         setEvents(prev => [...prev, response.data!]);
         return response.data;
       }
-      
+
       return null;
     } catch (err) {
-      setError('An unexpected error occurred while creating the event');
-      console.error('Error creating event:', err);
+      setError("An unexpected error occurred while creating the event");
+      console.error("Error creating event:", err);
       return null;
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   /**
    * Update an existing event
    */
   const updateEvent = async (id: string, event: TimelineEvent): Promise<boolean> => {
+    if (isLoading) return false; // Optional: prevent concurrent updates
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await controller.updateEvent(id, event);
-      
+
       if (response.error) {
         setError(response.error);
         return false;
@@ -81,27 +94,29 @@ export function useHistoricEvents() {
         setEvents(prev => prev.map(e => (e.id === id ? response.data! : e)));
         return true;
       }
-      
+
       return false;
     } catch (err) {
-      setError('An unexpected error occurred while updating the event');
-      console.error('Error updating event:', err);
+      setError("An unexpected error occurred while updating the event");
+      console.error("Error updating event:", err);
       return false;
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   /**
    * Delete an event
    */
   const deleteEvent = async (id: string): Promise<boolean> => {
+    if (isLoading) return false; // Optional: prevent concurrent deletes
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await controller.deleteEvent(id);
-      
+
       if (response.error) {
         setError(response.error);
         return false;
@@ -110,14 +125,14 @@ export function useHistoricEvents() {
         return true;
       }
     } catch (err) {
-      setError('An unexpected error occurred while deleting the event');
-      console.error('Error deleting event:', err);
+      setError("An unexpected error occurred while deleting the event");
+      console.error("Error deleting event:", err);
       return false;
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   return {
     events,
     isLoading,
@@ -125,6 +140,6 @@ export function useHistoricEvents() {
     loadEvents,
     createEvent,
     updateEvent,
-    deleteEvent
+    deleteEvent,
   };
 }

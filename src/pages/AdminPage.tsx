@@ -1,6 +1,6 @@
 // src/components/admin/AdminPage.tsx
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -20,9 +20,13 @@ const AdminPage = () => {
   const [editingEvent, setEditingEvent] = useState<Partial<TimelineEvent> | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-
+  const loadCalled = useRef(false);
   useEffect(() => {
-    loadEvents();
+    console.log("called useeffect");
+    if (!loadCalled.current) {
+      loadEvents();
+      loadCalled.current = true;
+    }
   }, []);
 
   const handleSave = async (event: Partial<TimelineEvent>) => {
@@ -45,7 +49,9 @@ const AdminPage = () => {
         toast({ title: "Event Updated" });
       } else {
         const { id, ...payloadWithoutId } = fullEvent;
-        await createEvent(HistoricEventModel.fromTimelineEventWithoutId(payloadWithoutId));
+        await createEvent(payloadWithoutId);
+        console.log("Submitting event:", fullEvent);
+
         toast({ title: "Event Created" });
       }
 
@@ -90,7 +96,7 @@ const AdminPage = () => {
         </div>
       </div>
 
-      <Card className="w-full max-w-3xl mx-auto mb-8">
+      <Card className="w-full max-w-6xl mx-auto mb-8">
         <CardHeader>
           <CardTitle className="text-2xl">
             {editingEvent?.id ? "Edit Event" : "Add New Historic Event"}

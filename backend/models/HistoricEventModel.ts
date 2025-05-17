@@ -14,10 +14,10 @@ export class HistoricEventModel {
       title: event.title,
       date: event.date,
       year: event.year,
-      location: {
-        city: event.city,
-        province: event.province,
-      },
+
+      city: event.city,
+      province: event.province,
+
       style: event.styles,
       description: event.description,
       videoUrl: event.video_url,
@@ -29,6 +29,8 @@ export class HistoricEventModel {
    * Convert a frontend TimelineEvent to a backend HistoricEvent
    */
   static fromTimelineEvent(event: TimelineEvent): HistoricEvent {
+    const stylesAsString = Array.isArray(event.style) ? JSON.stringify(event.style) : "[]";
+
     return {
       id: event.id,
       title: event.title,
@@ -36,7 +38,7 @@ export class HistoricEventModel {
       year: event.year,
       city: event.city,
       province: event.province,
-      styles: event.style,
+      styles: stylesAsString,
       description: event.description,
       video_url: event.videoUrl,
       thumbnail_url: event.thumbnailUrl,
@@ -44,16 +46,21 @@ export class HistoricEventModel {
   }
 
   static fromTimelineEventWithoutId(event: Omit<TimelineEvent, "id">): Omit<HistoricEvent, "id"> {
-    return {
+    const stylesAsString = Array.isArray(event.style) ? JSON.stringify(event.style) : "[]";
+
+    const backendData = {
       title: event.title,
       date: event.date,
       year: event.year,
       city: event.city,
       province: event.province,
-      styles: event.style,
+      styles: stylesAsString,
       description: event.description,
       video_url: event.videoUrl,
       thumbnail_url: event.thumbnailUrl,
     };
+    console.log("📦 Prepared backendData for insert:", backendData);
+
+    return backendData;
   }
 }

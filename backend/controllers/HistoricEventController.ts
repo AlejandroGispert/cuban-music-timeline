@@ -47,9 +47,8 @@ export class HistoricEventController {
     }
   }
 
-  async createEvent(event: TimelineEvent): Promise<ApiResponse<TimelineEvent>> {
+  async createEvent(event: Omit<TimelineEvent, "id">): Promise<ApiResponse<TimelineEvent>> {
     try {
-      // Omit id so DB can auto-generate
       const backendData = HistoricEventModel.fromTimelineEventWithoutId(event);
 
       const { data, error } = await supabase

@@ -4,7 +4,7 @@
  * Represents a single event shown in the timeline.
  */
 export interface TimelineEvent {
-  id: number;
+  id?: number;
   title: string;
   date: string; // e.g., "January 1, 1959"
   year: number; // For easier sorting/filtering
@@ -12,7 +12,7 @@ export interface TimelineEvent {
   province: string;
   style: string[]; // e.g., ["Salsa", "Son Cubano"]
   description: string;
-  videoUrl?: string; // Optional YouTube link
+  videoUrl: string; // Optional YouTube link
   thumbnailUrl?: string; // Optional image for display
 }
 
