@@ -56,12 +56,9 @@ export class HistoricEventController {
   /**
    * Create a new historic event
    */
-  async createEvent(event: Omit<TimelineEvent, "id">): Promise<ApiResponse<TimelineEvent>> {
+  async createEvent(event: TimelineEvent): Promise<ApiResponse<TimelineEvent>> {
     try {
-      const backendData = HistoricEventModel.fromTimelineEvent({
-        ...event,
-        id: crypto.randomUUID(),
-      });
+      const backendData = HistoricEventModel.fromTimelineEvent(event);
 
       const { data, error } = await supabase
         .from("historic_events")
@@ -118,10 +115,7 @@ export class HistoricEventController {
    */
   async deleteEvent(id: string): Promise<ApiResponse<void>> {
     try {
-      const { error } = await supabase
-        .from("historic_events")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("historic_events").delete().eq("id", id);
 
       if (error) {
         console.error("Supabase delete error:", error);

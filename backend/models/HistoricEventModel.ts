@@ -29,17 +29,12 @@ export class HistoricEventModel {
    * Convert a frontend TimelineEvent to a backend HistoricEvent
    */
   static fromTimelineEvent(event: TimelineEvent): HistoricEvent {
-    if (!event.location || !event.location.city || !event.location.province) {
-      throw new Error("Missing city or province in location");
-    }
-
     return {
-      id: event.id,
       title: event.title,
       date: event.date,
       year: event.year,
-      city: event.location.city,
-      province: event.location.province,
+      city: event.city,
+      province: event.province,
       styles: event.style,
       description: event.description,
       video_url: event.videoUrl,
