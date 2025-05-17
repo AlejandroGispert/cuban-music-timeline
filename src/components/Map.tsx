@@ -30,8 +30,8 @@ const Map = () => {
     const citiesSet = new Set<string>();
 
     for (const event of events) {
-      const province = event.location.province;
-      const city = event.location.city;
+      const province = event.province;
+      const city = event.city;
       provincesSet.add(province);
       citiesSet.add(city);
       counts[province] = (counts[province] || 0) + 1;
@@ -43,12 +43,15 @@ const Map = () => {
   }, [events]);
 
   // Zoom + navigate
-  const handleProvinceClick = useCallback((province: string) => {
-    setSelectedProvince(province); // Optional: trigger zoom/focus in map if supported
-    const params = new URLSearchParams(window.location.search);
-    params.set("province", province);
-    navigate(`/?${params.toString()}`);
-  }, [navigate]);
+  const handleProvinceClick = useCallback(
+    (province: string) => {
+      setSelectedProvince(province); // Optional: trigger zoom/focus in map if supported
+      const params = new URLSearchParams(window.location.search);
+      params.set("province", province);
+      navigate(`/?${params.toString()}`);
+    },
+    [navigate]
+  );
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -88,10 +91,7 @@ const Map = () => {
                         {eventCounts[province] || 0} musical events
                       </p>
                     </div>
-                    <Badge
-                      variant="outline"
-                      className="bg-cuba-blue/10 border-cuba-blue/20"
-                    >
+                    <Badge variant="outline" className="bg-cuba-blue/10 border-cuba-blue/20">
                       {eventCounts[province] || 0}
                     </Badge>
                   </CardContent>
@@ -132,9 +132,15 @@ const Map = () => {
               Home to the birth of Danzón, Cha-Cha-Chá and development of modern Salsa.
             </p>
             <div className="flex flex-wrap gap-1">
-              <Badge variant="outline" className="bg-cuba-teal/10 text-cuba-teal">Danzón</Badge>
-              <Badge variant="outline" className="bg-cuba-teal/10 text-cuba-teal">Cha-Cha-Chá</Badge>
-              <Badge variant="outline" className="bg-cuba-teal/10 text-cuba-teal">Salsa</Badge>
+              <Badge variant="outline" className="bg-cuba-teal/10 text-cuba-teal">
+                Danzón
+              </Badge>
+              <Badge variant="outline" className="bg-cuba-teal/10 text-cuba-teal">
+                Cha-Cha-Chá
+              </Badge>
+              <Badge variant="outline" className="bg-cuba-teal/10 text-cuba-teal">
+                Salsa
+              </Badge>
             </div>
           </CardContent>
         </Card>
@@ -146,8 +152,12 @@ const Map = () => {
               Known for Punto Guajiro and rural musical traditions with Spanish influences.
             </p>
             <div className="flex flex-wrap gap-1">
-              <Badge variant="outline" className="bg-cuba-teal/10 text-cuba-teal">Punto Guajiro</Badge>
-              <Badge variant="outline" className="bg-cuba-teal/10 text-cuba-teal">Guajira</Badge>
+              <Badge variant="outline" className="bg-cuba-teal/10 text-cuba-teal">
+                Punto Guajiro
+              </Badge>
+              <Badge variant="outline" className="bg-cuba-teal/10 text-cuba-teal">
+                Guajira
+              </Badge>
             </div>
           </CardContent>
         </Card>
@@ -159,8 +169,12 @@ const Map = () => {
               Birthplace of Son Cubano with strong African rhythmic influences.
             </p>
             <div className="flex flex-wrap gap-1">
-              <Badge variant="outline" className="bg-cuba-teal/10 text-cuba-teal">Son Cubano</Badge>
-              <Badge variant="outline" className="bg-cuba-teal/10 text-cuba-teal">Changüí</Badge>
+              <Badge variant="outline" className="bg-cuba-teal/10 text-cuba-teal">
+                Son Cubano
+              </Badge>
+              <Badge variant="outline" className="bg-cuba-teal/10 text-cuba-teal">
+                Changüí
+              </Badge>
             </div>
           </CardContent>
         </Card>

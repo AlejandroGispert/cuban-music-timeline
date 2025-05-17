@@ -1,16 +1,44 @@
 export const yearRange: [number, number] = [1800, new Date().getFullYear()];
-
 export const allMusicStyles: string[] = [
   "Danzón",
-  "Son",
+  "Son cubano",
   "Cha-cha-chá",
   "Mambo",
   "Salsa",
   "Bolero",
-  "Trova",
+  "Trova tradicional",
   "Nueva Trova",
-  "Reggaeton",
-  "Jazz",
+  "Reggaetón",
+  "Jazz afrocubano", // Afro-Cuban Jazz
+  "Changüí",
+  "Guajira",
+  "Guaracha",
+  "Rumba cubana",
+  "Yambú",
+  "Columbia",
+  "Zapateo",
+  "Pilón",
+  "Sucu-sucu",
+  "Punto cubano",
+  "Tumba francesa",
+  "Mozambique",
+  "Timba",
+  "Songo",
+  "Danzonete",
+  "Nengón",
+  "Habanera",
+  "Filin",
+  "Conga",
+  // Influenced styles
+  "Salsa dura", // Salsa style with heavy Cuban influence
+  "Latin Jazz", // Broader category including Cuban rhythms
+  "Boogaloo", // Fusion of Cuban rhythms with soul/R&B
+  "Descarga", // Improvised Cuban jam sessions
+  "Charanga", // Orchestral style with flute and violins
+  "Cubaton", // Cuban variant of reggaetón
+  "Afro-Cuban funk", // Funk infused with Cuban rhythms
+  "Jazz latino", // Encompassing broader Latin styles with Cuban roots
+  "Rueda de casino", // Social dance style based on Cuban casino
 ];
 
 export const allProvinces: string[] = [
@@ -34,7 +62,7 @@ export const allProvinces: string[] = [
 
 export const allCities: string[] = [
   // Havana (La Habana)
-  "Havana",
+  "La Habana",
   "Arroyo Naranjo",
   "Boyeros",
   "Centro Habana",
