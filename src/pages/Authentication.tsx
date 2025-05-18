@@ -46,18 +46,13 @@ const Authentication = () => {
   const [authError, setAuthError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>("login");
 
-  // Check if user is already authenticated
+  // Single effect to handle navigation after auth
   useEffect(() => {
-    const checkAuthStatus = async () => {
-      const isAuthed = await checkAuth();
-      if (isAuthed || isAuthenticated) {
-        const redirectPath = user?.role === "admin" ? "/admin" : "/";
-        navigate(redirectPath);
-      }
-    };
-
-    checkAuthStatus();
-  }, [isAuthenticated, navigate, user, checkAuth]);
+    if (isAuthenticated && user) {
+      console.log("User authenticated, navigating to admin:", user);
+      navigate("/admin");
+    }
+  }, [isAuthenticated, user, navigate]);
 
   // Login form
   const loginForm = useForm<z.infer<typeof loginSchema>>({
@@ -87,11 +82,6 @@ const Authentication = () => {
         title: "Login successful",
         description: `Welcome back, ${values.email}!`,
       });
-
-      // Navigate based on role
-      if (user?.role === "admin" || user?.role === "editor") {
-        navigate("/admin");
-      }
     } else {
       setAuthError(error || "Authentication failed");
     }
@@ -106,11 +96,6 @@ const Authentication = () => {
         title: "Signup successful",
         description: `Welcome, ${values.email}!`,
       });
-
-      // Navigate based on role
-      if (user?.role === "admin" || user?.role === "editor") {
-        navigate("/admin");
-      }
     } else {
       setAuthError(error || "Signup failed");
     }

@@ -18,7 +18,7 @@ export class HistoricEventController {
         .from("historic_events")
         .select("*", { count: "exact", head: true });
 
-      console.log("Table count:", count, "Count error:", countError);
+      //  console.log("Table count:", count, "Count error:", countError);
 
       // Now fetch the actual data
       const { data, error } = await supabase
@@ -31,16 +31,16 @@ export class HistoricEventController {
         return { error: "Failed to fetch events", status: 500 };
       }
 
-      console.log("Raw data from Supabase:", data);
+      // console.log("Raw data from Supabase:", data);
       console.log("Number of events:", data?.length);
 
-      if (data && data.length > 0) {
-        console.log("Sample event:", data[0]);
-      }
+      // if (data && data.length > 0) {
+      //   console.log("Sample event:", data[0]);
+      // }
 
       const timelineEvents = data.map(HistoricEventModel.toTimelineEvent);
-      console.log("Converted timeline events:", timelineEvents);
-      console.log("Number of converted events:", timelineEvents.length);
+      //   console.log("Converted timeline events:", timelineEvents);
+      //   console.log("Number of converted events:", timelineEvents.length);
 
       return { data: timelineEvents, status: 200 };
     } catch (error) {

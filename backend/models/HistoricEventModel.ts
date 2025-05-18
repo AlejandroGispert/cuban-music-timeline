@@ -9,12 +9,12 @@ export class HistoricEventModel {
    * Convert a backend HistoricEvent to a frontend TimelineEvent
    */
   static toTimelineEvent(event: HistoricEvent): TimelineEvent {
-    console.log("Converting backend event to timeline event:", event);
+    // console.log("Converting backend event to timeline event:", event);
 
     let styles: string[] = [];
     try {
       styles = JSON.parse(event.styles);
-      console.log("Parsed styles:", styles);
+      // console.log("Parsed styles:", styles);
     } catch (e) {
       console.error("Error parsing styles:", e, "Raw styles:", event.styles);
     }
@@ -33,7 +33,7 @@ export class HistoricEventModel {
       createdBy: event.created_by,
     };
 
-    console.log("Converted to timeline event:", timelineEvent);
+    // console.log("Converted to timeline event:", timelineEvent);
     return timelineEvent;
   }
 
@@ -41,10 +41,10 @@ export class HistoricEventModel {
    * Convert a frontend TimelineEvent to a backend HistoricEvent
    */
   static fromTimelineEvent(event: TimelineEvent): HistoricEvent {
-    console.log("Converting timeline event to backend event:", event);
+    // console.log("Converting timeline event to backend event:", event);
 
     const stylesAsString = Array.isArray(event.style) ? JSON.stringify(event.style) : "[]";
-    console.log("Styles as string:", stylesAsString);
+    // console.log("Styles as string:", stylesAsString);
 
     const backendEvent = {
       id: event.id!,
@@ -65,10 +65,10 @@ export class HistoricEventModel {
   }
 
   static fromTimelineEventWithoutId(event: Omit<TimelineEvent, "id">): Omit<HistoricEvent, "id"> {
-    console.log("Converting timeline event (without id) to backend event:", event);
+    // console.log("Converting timeline event (without id) to backend event:", event);
 
     const stylesAsString = Array.isArray(event.style) ? JSON.stringify(event.style) : "[]";
-    console.log("Styles as string:", stylesAsString);
+    // console.log("Styles as string:", stylesAsString);
 
     const backendData = {
       title: event.title,
@@ -82,7 +82,7 @@ export class HistoricEventModel {
       thumbnail_url: event.thumbnailUrl ?? "",
       created_by: event.createdBy ?? "",
     };
-    console.log("Converted to backend data:", backendData);
+    // console.log("Converted to backend data:", backendData);
 
     return backendData;
   }

@@ -1,5 +1,5 @@
 // src/hooks/useAuth.ts
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   signup,
   login,
@@ -20,35 +20,179 @@ export function useAuth() {
     error: null,
   });
 
-  // Listen for auth state changes
-  useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        const { user } = await getUser();
-        if (user) {
-          setAuthState({
-            user,
+  // Add a ref to track if we've already checked auth
+  const hasCheckedAuth = useRef(false);
+  const checkInProgress = useRef(false);
+  const lastAuthState = useRef(authState);
+
+  const checkAuth = async () => {
+    // Prevent multiple simultaneous checks
+    if (checkInProgress.current) {
+      console.log("Auth check already in progress, skipping...");
+      return false;
+    }
+
+    try {
+      checkInProgress.current = true;
+      const { session } = await getSession();
+      const { user } = await getUser();
+
+      console.log("Checking auth - Full details:", {
+        session: session
+          ? {
+              access_token: session.access_token,
+              user: session.user,
+              user_metadata: session.user?.user_metadata,
+            }
+          : null,
+        user: user
+          ? {
+              id: user.id,
+              email: user.email,
+              role: user.role,
+              metadata: user.user_metadata,
+            }
+          : null,
+      });
+
+      if (session && user) {
+        // Ensure we get the role from user metadata
+        const userWithRole = {
+          ...user,
+          role: session.user.user_metadata?.role || user.role,
+        };
+
+        // Only update state if it's different
+        if (
+          JSON.stringify(lastAuthState.current) !==
+          JSON.stringify({
+            user: userWithRole,
             isAuthenticated: true,
             isLoading: false,
             error: null,
-          });
+          })
+        ) {
+          console.log("Setting auth state with user:", userWithRole);
+          const newState = {
+            user: userWithRole,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          };
+          lastAuthState.current = newState;
+          setAuthState(newState);
         }
-      } else if (event === "SIGNED_OUT") {
-        setAuthState({
+        return true;
+      }
+
+      // Only update state if it's different
+      if (
+        JSON.stringify(lastAuthState.current) !==
+        JSON.stringify({
           user: null,
           isAuthenticated: false,
           isLoading: false,
           error: null,
-        });
+        })
+      ) {
+        console.log("No valid session or user found");
+        const newState = {
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          error: null,
+        };
+        lastAuthState.current = newState;
+        setAuthState(newState);
+      }
+      return false;
+    } catch (error) {
+      console.error("Auth check error:", error);
+      const newState = {
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: error instanceof Error ? error.message : "Auth check failed",
+      };
+      lastAuthState.current = newState;
+      setAuthState(newState);
+      return false;
+    } finally {
+      checkInProgress.current = false;
+    }
+  };
+
+  useEffect(() => {
+    let mounted = true;
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event);
+      if (!mounted) return;
+
+      if (event === "SIGNED_IN" && session) {
+        const { user } = await getUser();
+        if (user && mounted) {
+          // Ensure we get the role from user metadata
+          const userWithRole = {
+            ...user,
+            role: session.user.user_metadata?.role || user.role,
+          };
+
+          // Only update state if it's different
+          if (
+            JSON.stringify(lastAuthState.current) !==
+            JSON.stringify({
+              user: userWithRole,
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            })
+          ) {
+            console.log("User authenticated:", userWithRole);
+            const newState = {
+              user: userWithRole,
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            };
+            lastAuthState.current = newState;
+            setAuthState(newState);
+          }
+        }
+      } else if (event === "SIGNED_OUT" && mounted) {
+        // Only update state if it's different
+        if (
+          JSON.stringify(lastAuthState.current) !==
+          JSON.stringify({
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: null,
+          })
+        ) {
+          console.log("User signed out");
+          const newState = {
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: null,
+          };
+          lastAuthState.current = newState;
+          setAuthState(newState);
+        }
       }
     });
 
-    // Initial session check
-    checkAuth();
+    // Only do initial session check if we haven't already
+    if (!hasCheckedAuth.current) {
+      checkAuth();
+      hasCheckedAuth.current = true;
+    }
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
@@ -131,40 +275,6 @@ export function useAuth() {
   const handleLogout = async () => {
     await logout();
     setAuthState({ user: null, isAuthenticated: false, isLoading: false, error: null });
-  };
-
-  const checkAuth = async () => {
-    try {
-      const { session } = await getSession();
-      const { user } = await getUser();
-
-      if (session && user) {
-        setAuthState({
-          user,
-          isAuthenticated: true,
-          isLoading: false,
-          error: null,
-        });
-        return true;
-      }
-
-      setAuthState({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: null,
-      });
-      return false;
-    } catch (error) {
-      console.error("Auth check error:", error);
-      setAuthState({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: error instanceof Error ? error.message : "Auth check failed",
-      });
-      return false;
-    }
   };
 
   const handleResendConfirmation = async (email: string) => {

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import { useHistoricEvents } from "@/hooks/useHistoricEvents";
 const Map = () => {
   const navigate = useNavigate();
   const { events, loadEvents } = useHistoricEvents();
+  const loadEventsCalled = useRef(false);
 
   const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
   const [hoveredProvince, setHoveredProvince] = useState<string | null>(null);
@@ -18,8 +19,11 @@ const Map = () => {
 
   // Load events once
   useEffect(() => {
-    loadEvents();
-  }, [loadEvents]);
+    if (!loadEventsCalled.current) {
+      loadEvents();
+      loadEventsCalled.current = true;
+    }
+  }, []); // Remove loadEvents from dependencies
 
   // Process events into UI data
   useEffect(() => {
@@ -45,10 +49,8 @@ const Map = () => {
   // Zoom + navigate
   const handleProvinceClick = useCallback(
     (province: string) => {
-      setSelectedProvince(province); // Optional: trigger zoom/focus in map if supported
-      const params = new URLSearchParams(window.location.search);
-      params.set("province", province);
-      navigate(`/?${params.toString()}`);
+      setSelectedProvince(province);
+      navigate(`/?province=${encodeURIComponent(province)}`);
     },
     [navigate]
   );

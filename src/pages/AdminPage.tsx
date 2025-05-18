@@ -25,14 +25,22 @@ const AdminPage = () => {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const loadCalled = useRef(false);
 
-  // Load events on mount
+  // Load events on mount, only once
   useEffect(() => {
     if (!loadCalled.current) {
       console.log("Loading events in AdminPage...");
       loadEvents();
       loadCalled.current = true;
     }
-  }, [loadEvents]);
+  }, []); // Remove loadEvents from dependencies
+
+  // Verify admin access
+  useEffect(() => {
+    if (user && user.role !== "admin") {
+      console.log("Non-admin user attempting to access admin page:", user);
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   const handleSave = async (event: Partial<TimelineEvent>) => {
     try {
