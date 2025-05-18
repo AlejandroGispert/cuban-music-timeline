@@ -33,6 +33,11 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/admin" className="text-gray-600 hover:text-cuba-red text-sm">
+                  Admin
+                </Link>
+              </li>
+              <li>
                 <button className="text-gray-600 hover:text-cuba-red text-sm">Support Us</button>
               </li>
             </ul>

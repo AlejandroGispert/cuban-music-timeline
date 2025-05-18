@@ -21,6 +21,7 @@ const Timeline = () => {
   const [expandedEvent, setExpandedEvent] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState<number>(50);
 
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | undefined>(undefined);
   const zoomedOut = zoomLevel < 30;
   const veryZoomedOut = zoomLevel < 10;
 
@@ -95,7 +96,12 @@ const Timeline = () => {
 
   return (
     <div className="container mx-auto px-4">
-      <TimelineHeader filterOptions={filterOptions} onFilterChange={handleFilterChange} />
+      <TimelineHeader
+        filterOptions={filterOptions}
+        onFilterChange={handleFilterChange}
+        videoUrl={selectedVideoUrl}
+        clearVideo={() => setSelectedVideoUrl(undefined)}
+      />
 
       <div className="relative pt-16 pb-20">
         {isLoading ? (
@@ -110,6 +116,7 @@ const Timeline = () => {
             zoomedOut={zoomedOut}
             veryZoomedOut={veryZoomedOut}
             resetFilters={resetFilters}
+            setSelectedVideoUrl={setSelectedVideoUrl}
           />
         )}
 

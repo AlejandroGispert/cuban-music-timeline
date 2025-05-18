@@ -9,6 +9,7 @@ interface TimelineContentProps {
   zoomedOut: boolean;
   veryZoomedOut: boolean;
   resetFilters: () => void;
+  setSelectedVideoUrl: (url: string | undefined) => void;
 }
 
 const TimelineContent = ({
@@ -18,6 +19,7 @@ const TimelineContent = ({
   zoomedOut,
   veryZoomedOut,
   resetFilters,
+  setSelectedVideoUrl,
 }: TimelineContentProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -90,6 +92,7 @@ const TimelineContent = ({
               onToggleExpand={() => toggleExpand(event.id)}
               zoomedOut={zoomedOut}
               veryZoomedOut={veryZoomedOut}
+              onSelectVideo={(url: string) => setSelectedVideoUrl(url)}
             />
 
             {/* Dot on timeline line */}

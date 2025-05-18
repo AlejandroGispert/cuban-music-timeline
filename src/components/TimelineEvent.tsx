@@ -17,6 +17,7 @@ interface TimelineEventProps {
   onToggleExpand: () => void;
   zoomedOut?: boolean;
   veryZoomedOut?: boolean;
+  onSelectVideo?: (url: string) => void;
 }
 
 const TimelineEvent = ({
@@ -27,6 +28,7 @@ const TimelineEvent = ({
   onToggleExpand,
   zoomedOut = false,
   veryZoomedOut = false,
+  onSelectVideo,
 }: TimelineEventProps) => {
   const dragStartX = useRef<number | null>(null);
   const dragging = useRef(false);
@@ -70,7 +72,11 @@ const TimelineEvent = ({
   const handleVideoClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (event.videoUrl) {
-      window.open(event.videoUrl, "_blank");
+      if (onSelectVideo) {
+        onSelectVideo(event.videoUrl); // <-- centralized handling
+      } else {
+        window.open(event.videoUrl, "_blank");
+      }
     }
   };
 
