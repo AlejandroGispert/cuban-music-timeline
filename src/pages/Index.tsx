@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
@@ -9,7 +8,7 @@ const Index = () => {
   const [searchParams] = useSearchParams();
   const province = searchParams.get("province");
   const city = searchParams.get("city");
-  
+
   useEffect(() => {
     // This could be used to set initial filters based on URL parameters
     if (province || city) {
@@ -27,10 +26,10 @@ const Index = () => {
             Cuban Music Timeline
           </h1>
           <p className="text-gray-600 text-center mb-8 max-w-2xl mx-auto">
-            Explore the rich history of Cuban music through this interactive timeline, 
-            showcasing key events, musical styles, and cultural influences across time.
+            Explore the rich history of Cuban music through this interactive timeline, showcasing
+            key events, musical styles, and cultural influences across time.
           </p>
-          
+
           <Timeline />
         </div>
       </main>

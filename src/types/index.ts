@@ -13,7 +13,25 @@ export interface TimelineEvent {
   style: string[]; // e.g., ["Salsa", "Son Cubano"]
   description: string;
   videoUrl: string; // Optional YouTube link
-  thumbnailUrl?: string; // Optional image for display
+  thumbnailUrl?: string;
+  createdBy?: string; // Optional image for display
+}
+
+/**
+ * Represents the database schema for historic events
+ */
+export interface HistoricEvent {
+  id: number;
+  title: string;
+  date: string;
+  year: number;
+  city: string;
+  province: string;
+  styles: string; // Stored as JSON string in database
+  description: string;
+  video_url: string;
+  thumbnail_url: string;
+  created_by: string;
 }
 
 /**

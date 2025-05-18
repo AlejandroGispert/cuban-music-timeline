@@ -29,6 +29,7 @@ const AdminPage = () => {
   // Load events on mount
   useEffect(() => {
     if (!loadCalled.current) {
+      console.log("Loading events in AdminPage...");
       loadEvents();
       loadCalled.current = true;
     }
@@ -47,23 +48,24 @@ const AdminPage = () => {
         description: event.description!.trim(),
         videoUrl: event.videoUrl,
         thumbnailUrl: event.thumbnailUrl ?? "",
+        createdBy: user?.id ?? "",
       };
 
       if (event.id) {
-        await updateEvent(event.id.toString(), HistoricEventModel.fromTimelineEvent(fullEvent));
+        console.log("Updating event:", fullEvent);
+        await updateEvent(event.id.toString(), fullEvent);
         toast({ title: "Event Updated" });
       } else {
         const { id, ...payloadWithoutId } = fullEvent;
+        console.log("Creating new event:", payloadWithoutId);
         await createEvent(payloadWithoutId);
-        console.log("Submitting event:", fullEvent);
-
         toast({ title: "Event Created" });
       }
 
       setEditingEvent(null);
       loadEvents();
     } catch (err) {
-      console.error(err);
+      console.error("Error saving event:", err);
       toast({
         title: "Save Failed",
         description: "There was a problem saving the event.",
