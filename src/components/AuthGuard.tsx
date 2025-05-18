@@ -12,14 +12,17 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, requiredRole }) => {
   const { user, isAuthenticated, checkAuth } = useAuth();
   const location = useLocation();
   const [isChecking, setIsChecking] = useState(true);
-  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
         const isAuthed = await checkAuth();
         if (!isAuthed) {
-          setShowToast(true);
+          toast({
+            title: "Authentication Required",
+            description: "Please log in to access this page.",
+            variant: "destructive",
+          });
         }
       } catch (error) {
         console.error("Auth check failed:", error);
@@ -31,18 +34,6 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, requiredRole }) => {
     checkAuthStatus();
   }, [checkAuth]);
 
-  // Show toast in a separate effect to avoid setState during render
-  useEffect(() => {
-    if (showToast) {
-      toast({
-        title: "Authentication Required",
-        description: "Please log in to access this page.",
-        variant: "destructive",
-      });
-      setShowToast(false);
-    }
-  }, [showToast]);
-
   if (isChecking) {
     return <div>Loading...</div>;
   }
@@ -52,8 +43,8 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, requiredRole }) => {
     return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
   }
 
-  // Check if user has either admin or editor role
-  if (requiredRole && user?.role !== "admin" && user?.role !== "editor") {
+  // Check if user has the required role
+  if (requiredRole && user?.role !== requiredRole && user?.role !== "admin") {
     toast({
       title: "Access Denied",
       description: "You don't have permission to access this page.",

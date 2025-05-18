@@ -14,7 +14,6 @@ import EventList from "../components/admin/EventList";
 import ConfirmDeleteDialog from "../components/admin/ConfirmDeleteDialog";
 import AccessCodeManager from "../components/admin/AccessCodeManager";
 import { useAuth } from "@/hooks/useAuth";
-import AuthGuard from "@/components/AuthGuard";
 
 const AdminPage = () => {
   const navigate = useNavigate();
@@ -94,42 +93,40 @@ const AdminPage = () => {
   };
 
   return (
-    <AuthGuard requiredRole="editor">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-cuba-navy">Admin Dashboard</h1>
-          <div className="space-x-2">
-            <Button onClick={() => navigate("/")}>View Timeline</Button>
-            <Button onClick={() => navigate("/map")}>View Map</Button>
-          </div>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-cuba-navy">Admin Dashboard</h1>
+        <div className="space-x-2">
+          <Button onClick={() => navigate("/")}>View Timeline</Button>
+          <Button onClick={() => navigate("/map")}>View Map</Button>
         </div>
-        <div>
-          <Card className="w-full max-w-6xl mx-auto mb-8">
-            <CardHeader>
-              <CardTitle className="text-2xl">
-                {editingEvent?.id ? "Edit Event" : "Add New Historic Event"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <EventForm
-                event={editingEvent}
-                onSave={handleSave}
-                onCancel={() => setEditingEvent(null)}
-              />
-            </CardContent>
-          </Card>
-          {/* Only show Access Code manager for admins */}
-          {user?.role === "admin" && <AccessCodeManager />}
-        </div>
-        <EventList events={events} onEdit={handleEdit} onDelete={handleConfirmDelete} />
-
-        <ConfirmDeleteDialog
-          open={showConfirmDelete}
-          onCancel={() => setShowConfirmDelete(false)}
-          onConfirm={handleDelete}
-        />
       </div>
-    </AuthGuard>
+      <div>
+        <Card className="w-full max-w-6xl mx-auto mb-8">
+          <CardHeader>
+            <CardTitle className="text-2xl">
+              {editingEvent?.id ? "Edit Event" : "Add New Historic Event"}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <EventForm
+              event={editingEvent}
+              onSave={handleSave}
+              onCancel={() => setEditingEvent(null)}
+            />
+          </CardContent>
+        </Card>
+        {/* Only show Access Code manager for admins */}
+        {user?.role === "admin" && <AccessCodeManager />}
+      </div>
+      <EventList events={events} onEdit={handleEdit} onDelete={handleConfirmDelete} />
+
+      <ConfirmDeleteDialog
+        open={showConfirmDelete}
+        onCancel={() => setShowConfirmDelete(false)}
+        onConfirm={handleDelete}
+      />
+    </div>
   );
 };
 

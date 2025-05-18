@@ -15,6 +15,7 @@ import MapView from "./pages/MapView";
 import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
 import Authentication from "./pages/Authentication";
+import AuthGuard from "@/components/AuthGuard";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +25,14 @@ const router = createBrowserRouter(
     <>
       <Route path="/" element={<Index />} />
       <Route path="/map" element={<MapView />} />
-      <Route path="/admin" element={<AdminPage />} />
+      <Route
+        path="/admin"
+        element={
+          <AuthGuard requiredRole="admin">
+            <AdminPage />
+          </AuthGuard>
+        }
+      />
       <Route path="/auth" element={<Authentication />} />
       <Route path="*" element={<NotFound />} />
     </>

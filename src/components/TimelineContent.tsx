@@ -63,8 +63,8 @@ const TimelineContent = ({
     <div className="relative min-h-[300px] w-full px-4">
       {/* Timeline center line */}
       <div
-        className="absolute left-0 w-full h-[2px] bg-gray-300 z-0"
-        style={{ top: expandedEvent ? "35%" : "50%" }}
+        className="absolute left-0 w-full h-[2px] bg-red-300 z-0"
+        style={{ top: expandedEvent ? "150px" : "150px" }}
       />
       {/* Scroll container with drag support */}
       <div
@@ -103,7 +103,7 @@ const TimelineContent = ({
                   top: index % 2 === 0 ? "132px" : "12px", // Higher dot when card is below
                   pointerEvents: "none",
                 }}
-              />
+              ></div>
             )}
           </div>
         ))}
