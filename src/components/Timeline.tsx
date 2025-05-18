@@ -51,13 +51,10 @@ const Timeline = () => {
         if (event.year < filterOptions.yearRange[0] || event.year > filterOptions.yearRange[1])
           return false;
         //this one is working good, provinces
-        if (
-          filterOptions.provinces.length > 0 &&
-          !filterOptions.provinces.includes(event.location.province)
-        )
+        if (filterOptions.provinces.length > 0 && !filterOptions.provinces.includes(event.province))
           return false;
         //this one is working good, cities
-        if (filterOptions.cities.length > 0 && !filterOptions.cities.includes(event.location.city))
+        if (filterOptions.cities.length > 0 && !filterOptions.cities.includes(event.city))
           return false;
 
         return true;

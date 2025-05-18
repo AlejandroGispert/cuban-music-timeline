@@ -91,7 +91,7 @@ export function useHistoricEvents() {
         setError(response.error);
         return false;
       } else if (response.data) {
-        setEvents(prev => prev.map(e => (e.id === id ? response.data! : e)));
+        setEvents(prev => prev.map(e => (e.id === Number(id) ? response.data! : e)));
         return true;
       }
 
@@ -121,7 +121,7 @@ export function useHistoricEvents() {
         setError(response.error);
         return false;
       } else {
-        setEvents(prev => prev.filter(e => e.id !== id));
+        setEvents(prev => prev.filter(e => e.id !== Number(id)));
         return true;
       }
     } catch (err) {

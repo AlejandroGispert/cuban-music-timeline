@@ -33,7 +33,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/admin" className="text-gray-600 hover:text-cuba-red text-sm">
+                <Link to="/auth" className="text-gray-600 hover:text-cuba-red text-sm">
                   Admin
                 </Link>
               </li>

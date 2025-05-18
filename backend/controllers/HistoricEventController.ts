@@ -1,12 +1,17 @@
-import { HistoricEvent, ApiResponse, TimelineEvent } from "@/types";
+import { TimelineEvent } from "@/types";
 import { HistoricEventModel } from "../models/HistoricEventModel";
 import { supabase } from "../../integrations/supabase/client";
+
+interface ApiResponse<T> {
+  data?: T;
+  error?: string;
+  status: number;
+}
 
 export class HistoricEventController {
   async getAllEvents(): Promise<ApiResponse<TimelineEvent[]>> {
     try {
       const { data, error } = await supabase.from("historic_events").select("*");
-      console.log("Fetching all historic events");
 
       if (error) {
         console.error("Supabase fetch error:", error);

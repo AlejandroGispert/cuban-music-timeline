@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { TimelineEvent as TimelineEventType } from "@/types";
 import TimelineEvent from "./TimelineEvent";
-
+import debug from "debug";
 interface TimelineContentProps {
   filteredEvents: TimelineEventType[];
   expandedEvent: string | null;
@@ -88,15 +88,15 @@ const TimelineContent = ({
               event={event}
               index={index}
               isLeft={index % 2 === 0}
-              isExpanded={expandedEvent === event.id}
-              onToggleExpand={() => toggleExpand(event.id)}
+              isExpanded={expandedEvent === event.id.toString()}
+              onToggleExpand={() => toggleExpand(event.id.toString())}
               zoomedOut={zoomedOut}
               veryZoomedOut={veryZoomedOut}
               onSelectVideo={(url: string) => setSelectedVideoUrl(url)}
             />
 
             {/* Dot on timeline line */}
-            {expandedEvent !== event.id && (
+            {expandedEvent !== event.id.toString() && (
               <div
                 className="w-3 h-3 rounded-full bg-gray-400 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
                 style={{
