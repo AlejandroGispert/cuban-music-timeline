@@ -2,6 +2,7 @@ import { X, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Filters from "./Filters";
 import { FilterOptions } from "@/types";
+import { useEffect, useRef, useState } from "react";
 
 interface TimelineHeaderProps {
   filterOptions: FilterOptions;
@@ -12,7 +13,7 @@ interface TimelineHeaderProps {
 
 const getEmbedUrl = (url: string): string => {
   const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
-  return match ? `https://www.youtube.com/embed/${match[1]}` : url;
+  return match ? `https://www.youtube.com/embed/${match[1]}?enablejsapi=1` : url;
 };
 
 const TimelineHeader = ({
@@ -26,6 +27,37 @@ const TimelineHeader = ({
     const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
     return match ? `https://www.youtube.com/watch?v=${match[1]}` : url;
   };
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [player, setPlayer] = useState<any>(null);
+
+  useEffect(() => {
+    if (!videoUrl || !iframeRef.current) return;
+
+    const loadPlayer = () => {
+      if (window.YT && window.YT.Player) {
+        const ytPlayer = new window.YT.Player(iframeRef.current!, {
+          events: {
+            onReady: (event: any) => setPlayer(event.target),
+          },
+        });
+      }
+    };
+
+    if (window.YT && window.YT.Player) {
+      loadPlayer();
+    } else {
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.body.appendChild(tag);
+      (window as any).onYouTubeIframeAPIReady = loadPlayer;
+    }
+
+    return () => {
+      // Clean up player on unmount/change
+      player?.destroy?.();
+      setPlayer(null);
+    };
+  }, [videoUrl]);
 
   return (
     <>
@@ -37,6 +69,7 @@ const TimelineHeader = ({
         <div className="md:fixed md:top-[210px] md:right-4 w-full md:w-[320px] z-50">
           <div className="relative w-full aspect-video bg-white rounded-lg shadow-lg">
             <iframe
+              ref={iframeRef}
               className="w-full h-full rounded-lg"
               src={getEmbedUrl(videoUrl)}
               title="YouTube video preview"
@@ -48,7 +81,12 @@ const TimelineHeader = ({
             <Button
               size="sm"
               variant="outline"
-              onClick={() => window.open(getOriginalUrl(videoUrl), "_blank")}
+              onClick={() => {
+                if (player && player.pauseVideo) {
+                  player.pauseVideo();
+                }
+                window.open(getOriginalUrl(videoUrl), "_blank");
+              }}
               className="flex items-center gap-1"
             >
               Open in YouTube
