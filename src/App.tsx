@@ -3,13 +3,12 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  BrowserRouter,
-  Routes,
-  Route,
   createBrowserRouter,
-  RouterProvider,
   createRoutesFromElements,
+  RouterProvider,
+  Route,
 } from "react-router-dom";
+
 import Index from "./pages/Index";
 import MapView from "./pages/MapView";
 import AdminPage from "./pages/AdminPage";
@@ -17,9 +16,11 @@ import NotFound from "./pages/NotFound";
 import Authentication from "./pages/Authentication";
 import AuthGuard from "@/components/AuthGuard";
 
+// ✅ Import the consent banner component
+import ConsentBanner from "@/components/ConsentBanner";
+
 const queryClient = new QueryClient();
 
-// Create router with future flags
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -49,6 +50,8 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      {/* ✅ Show consent banner globally */}
+      <ConsentBanner />
       <RouterProvider router={router} />
     </TooltipProvider>
   </QueryClientProvider>
