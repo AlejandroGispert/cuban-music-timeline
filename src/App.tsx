@@ -8,6 +8,7 @@ import {
   RouterProvider,
   Route,
 } from "react-router-dom";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 import Index from "./pages/Index";
 import MapView from "./pages/MapView";
@@ -51,7 +52,9 @@ const App = () => (
       <Toaster />
       <Sonner />
       <ConsentBanner />
-      <RouterProvider router={router} />
+      <ErrorBoundary>
+        <RouterProvider router={router} />
+      </ErrorBoundary>
     </TooltipProvider>
   </QueryClientProvider>
 );
