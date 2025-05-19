@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { TimelineEvent } from "@/types";
 import { HistoricEventController } from "../../backend/controllers/HistoricEventController.ts";
+import { toast } from "@/components/ui/use-toast";
 
 /**
  * Custom hook for managing historic events
@@ -109,23 +110,52 @@ export function useHistoricEvents() {
    * Delete an event
    */
   const deleteEvent = async (id: string): Promise<boolean> => {
-    if (isLoading) return false; // Optional: prevent concurrent deletes
+    if (isLoading) return false;
 
     setIsLoading(true);
     setError(null);
 
     try {
+      console.log("Starting delete operation for event:", id);
       const response = await controller.deleteEvent(id);
+      console.log("Delete response:", response);
 
       if (response.error) {
+        console.error("Delete error:", response.error);
         setError(response.error);
+        toast({
+          title: "Delete Failed",
+          description: response.error,
+          variant: "destructive",
+        });
         return false;
-      } else {
-        setEvents(prev => prev.filter(e => e.id !== Number(id)));
+      }
+
+      // Only update the UI if the delete was successful
+      if (response.status === 204) {
+        console.log("Delete successful, updating UI");
+        setEvents(prev => {
+          const newEvents = prev.filter(e => e.id !== Number(id));
+          console.log("Events after delete:", newEvents);
+          return newEvents;
+        });
+        toast({ title: "Event Deleted" });
         return true;
       }
+
+      console.log("Delete operation completed with unexpected status:", response.status);
+      return false;
     } catch (err) {
-      setError("An unexpected error occurred while deleting the event");
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An unexpected error occurred while deleting the event";
+      setError(errorMessage);
+      toast({
+        title: "Delete Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
       console.error("Error deleting event:", err);
       return false;
     } finally {

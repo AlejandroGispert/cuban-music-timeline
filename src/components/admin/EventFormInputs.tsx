@@ -18,11 +18,7 @@ interface Props {
 const EventFormInputs: React.FC<Props> = ({ event, onChange }) => {
   const [newStyle, setNewStyle] = useState("");
 
-  const styles = Array.isArray(event.style)
-    ? event.style
-    : typeof event.style === "string"
-      ? event.style.split(",").map(s => s.trim())
-      : [];
+  const styles = Array.isArray(event.style) ? event.style : [];
 
   const addStyle = () => {
     const trimmed = newStyle.trim();
@@ -52,7 +48,9 @@ const EventFormInputs: React.FC<Props> = ({ event, onChange }) => {
           placeholder="Title"
           value={event.title || ""}
           onChange={e => onChange({ title: e.target.value })}
+          maxLength={41}
         />
+        <div className="text-sm text-gray-500 mt-1">{event.title?.length || 0}/41 characters</div>
       </div>
 
       <div>
@@ -77,7 +75,7 @@ const EventFormInputs: React.FC<Props> = ({ event, onChange }) => {
       </div>
 
       <div>
-        <Label>City</Label>
+        <Label>Municipalities</Label>
         <Select
           options={allCities.map(c => ({ value: c, label: c }))}
           value={event.city ? { label: event.city, value: event.city } : null}

@@ -155,7 +155,7 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
                   </div>
 
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">City</label>
+                    <label className="text-xs text-gray-500 mb-1 block">Municipalities</label>
                     <Select
                       value={localFilters.cities[0] || "all"}
                       onValueChange={handleCityChange}
@@ -164,7 +164,7 @@ const Filters = ({ filterOptions, onFilterChange }: FiltersProps) => {
                         <SelectValue placeholder="All Cities" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All Cities</SelectItem>
+                        <SelectItem value="all">All Municipalities</SelectItem>
                         {allCities.map(city => (
                           <SelectItem key={city} value={city}>
                             {city}

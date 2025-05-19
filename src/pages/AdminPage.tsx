@@ -39,6 +39,8 @@ const AdminPage = () => {
     if (user && user.role !== "admin") {
       console.log("Non-admin user attempting to access admin page:", user);
       navigate("/");
+    } else {
+      console.log("Current user state:", user);
     }
   }, [user, navigate]);
 
@@ -60,12 +62,18 @@ const AdminPage = () => {
 
       if (event.id) {
         console.log("Updating event:", fullEvent);
-        await updateEvent(event.id.toString(), fullEvent);
+        const result = await updateEvent(event.id.toString(), fullEvent);
+        if (!result) {
+          throw new Error("Update failed silently");
+        }
         toast({ title: "Event Updated" });
       } else {
         const { id, ...payloadWithoutId } = fullEvent;
         console.log("Creating new event:", payloadWithoutId);
-        await createEvent(payloadWithoutId);
+        const result = await createEvent(payloadWithoutId);
+        if (!result) {
+          throw new Error("Create failed silently");
+        }
         toast({ title: "Event Created" });
       }
 
@@ -75,7 +83,7 @@ const AdminPage = () => {
       console.error("Error saving event:", err);
       toast({
         title: "Save Failed",
-        description: "There was a problem saving the event.",
+        description: err instanceof Error ? err.message : "There was a problem saving the event.",
         variant: "destructive",
       });
     }

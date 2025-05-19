@@ -77,7 +77,22 @@ export class HistoricEventController {
 
   async createEvent(event: Omit<TimelineEvent, "id">): Promise<ApiResponse<TimelineEvent>> {
     try {
+      // Check if user is authenticated
+      const {
+        data: { session },
+        error: authError,
+      } = await supabase.auth.getSession();
+
+      if (authError || !session) {
+        console.error("Authentication error:", authError);
+        return {
+          error: "User must be authenticated to create events",
+          status: 401,
+        };
+      }
+
       const backendData = HistoricEventModel.fromTimelineEventWithoutId(event);
+      console.log("Attempting to create event with data:", backendData);
 
       const { data, error } = await supabase
         .from("historic_events")
@@ -86,8 +101,24 @@ export class HistoricEventController {
         .single();
 
       if (error) {
-        console.error("Supabase insert error:", error);
-        return { error: "Failed to create event", status: 500 };
+        console.error("Supabase insert error details:", {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+        });
+        return {
+          error: `Failed to create event: ${error.message}`,
+          status: 500,
+        };
+      }
+
+      if (!data) {
+        console.error("No data returned from insert");
+        return {
+          error: "No data returned after creating event",
+          status: 500,
+        };
       }
 
       return {
@@ -97,7 +128,7 @@ export class HistoricEventController {
     } catch (error) {
       console.error("Error creating historic event:", error);
       return {
-        error: "Failed to create historic event",
+        error: error instanceof Error ? error.message : "Failed to create historic event",
         status: 500,
       };
     }
@@ -129,18 +160,115 @@ export class HistoricEventController {
 
   async deleteEvent(id: string): Promise<ApiResponse<void>> {
     try {
-      const { error } = await supabase.from("historic_events").delete().eq("id", id);
+      // Check if user is authenticated
+      const {
+        data: { session },
+        error: authError,
+      } = await supabase.auth.getSession();
 
-      if (error) {
-        console.error("Supabase delete error:", error);
-        return { error: "Failed to delete event", status: 500 };
+      if (authError || !session) {
+        console.error("Authentication error:", authError);
+        return {
+          error: "User must be authenticated to delete events",
+          status: 401,
+        };
+      }
+
+      console.log("Current user session:", {
+        userId: session.user.id,
+        role: session.user.user_metadata?.role,
+        email: session.user.email,
+      });
+      console.log("Attempting to delete event with ID:", id);
+
+      // First check if the event exists and get its details
+      const { data: existingEvent, error: checkError } = await supabase
+        .from("historic_events")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      console.log("Existing event check:", { existingEvent, checkError });
+
+      if (checkError) {
+        console.error("Error checking event existence:", checkError);
+        return {
+          error: "Event not found",
+          status: 404,
+        };
+      }
+
+      // Check if user has permission to delete
+      const isAdmin = session.user.user_metadata?.role === "admin";
+      const isOwner = existingEvent.created_by === session.user.id;
+
+      console.log("Permission check:", {
+        isAdmin,
+        isOwner,
+        userId: session.user.id,
+        eventCreator: existingEvent.created_by,
+        eventId: id,
+      });
+
+      if (!isAdmin && !isOwner) {
+        return {
+          error: "You don't have permission to delete this event",
+          status: 403,
+        };
+      }
+
+      // Perform the delete with explicit error handling
+      const { error: deleteError, status } = await supabase
+        .from("historic_events")
+        .delete()
+        .eq("id", id)
+        .select();
+
+      console.log("Delete operation result:", {
+        deleteError,
+        status,
+        affectedRows: deleteError ? 0 : 1,
+      });
+
+      if (deleteError) {
+        console.error("Supabase delete error details:", {
+          code: deleteError.code,
+          message: deleteError.message,
+          details: deleteError.details,
+          hint: deleteError.hint,
+        });
+        return {
+          error: `Failed to delete event: ${deleteError.message}`,
+          status: 500,
+        };
+      }
+
+      // Verify deletion with a more specific query
+      const { data: verifyEvent, error: verifyError } = await supabase
+        .from("historic_events")
+        .select("id")
+        .eq("id", id)
+        .maybeSingle();
+
+      console.log("Verification after delete:", {
+        verifyEvent,
+        verifyError,
+        eventStillExists: !!verifyEvent,
+      });
+
+      if (verifyEvent) {
+        console.error("Event still exists after delete attempt:", verifyEvent);
+        return {
+          error: "Failed to delete event - event still exists",
+          status: 500,
+        };
       }
 
       return { status: 204 };
     } catch (error) {
       console.error(`Error deleting historic event with ID ${id}:`, error);
       return {
-        error: `Failed to delete historic event with ID ${id}`,
+        error: error instanceof Error ? error.message : "Failed to delete event",
         status: 500,
       };
     }
