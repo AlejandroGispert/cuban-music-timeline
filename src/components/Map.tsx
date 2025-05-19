@@ -56,16 +56,18 @@ const Map = () => {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h2 className="text-xl font-bold mb-4 text-cuba-navy">Cuba: Musical Regions</h2>
-        <p className="text-gray-600 mb-6">
+    <div className="container mx-auto px-0 md:px-4 py-8">
+      <div className="bg-white rounded-lg shadow-md p-4 md:p-6 mb-8">
+        <h2 className="text-xl font-bold mb-4 text-cuba-navy px-4 md:px-0">
+          Cuba: Musical Regions
+        </h2>
+        <p className="text-gray-600 mb-6 px-4 md:px-0">
           Click on a province to view its musical history in the timeline. This interactive map
           highlights the diverse musical traditions across Cuba.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-blue-50 rounded-lg p-4 relative min-h-[400px] flex items-center justify-center">
+          <div className="bg-blue-50 rounded-lg p-0 md:p-4 relative min-h-[400px] flex items-center justify-center">
             <CubaMap
               eventCounts={eventCounts}
               onProvinceClick={handleProvinceClick}
@@ -73,7 +75,7 @@ const Map = () => {
             />
           </div>
 
-          <div>
+          <div className="px-4 md:px-0">
             <h3 className="text-lg font-medium mb-4">Provinces</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {allProvinces.map(province => (

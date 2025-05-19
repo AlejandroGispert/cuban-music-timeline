@@ -58,7 +58,6 @@ const CubaMap = ({ eventCounts, onProvinceClick }: CubaMapProps) => {
   const onEachFeature = useCallback(
     (feature: Feature<Geometry, { province: string }>, layer: Layer) => {
       const provinceName = feature.properties.province;
-      const count = eventCounts[provinceName] || 0;
 
       geoJsonRef.current?.resetStyle(layer);
       layer.setStyle({
@@ -77,7 +76,7 @@ const CubaMap = ({ eventCounts, onProvinceClick }: CubaMapProps) => {
             fillOpacity: 0.9,
           });
           layer
-            .bindTooltip(`<strong>${provinceName}</strong><br>${count} musical events`, {
+            .bindTooltip(`<strong>${provinceName}</strong>`, {
               sticky: true,
             })
             .openTooltip();
@@ -92,13 +91,14 @@ const CubaMap = ({ eventCounts, onProvinceClick }: CubaMapProps) => {
   );
 
   return (
-    <div className="w-full h-[500px] rounded-lg overflow-hidden shadow-md">
+    <div className="w-full h-[500px] rounded-lg overflow-hidden shadow-md relative z-0">
       <MapContainer
         center={[21.7, -79.5]}
         zoom={6.5}
         scrollWheelZoom={true}
         ref={mapRef}
         style={{ height: "100%", width: "100%" }}
+        className="z-0"
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
