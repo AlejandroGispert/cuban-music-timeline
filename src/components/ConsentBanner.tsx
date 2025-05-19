@@ -94,7 +94,9 @@ const ConsentBanner = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 w-full bg-gray-800 text-white p-4 flex justify-between items-center z-[9999] shadow-lg">
-      <p className="text-sm">🎶 We use cookies to enhance your Cuban music journey. Is that ok?</p>
+      <p className="text-sm">
+        🎶 We use cookies for statistics, to enhance your Cuban music journey. Is that ok?
+      </p>
       <div className="space-x-2">
         <button
           className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded transition-colors"
