@@ -28,21 +28,23 @@ const TimelineHeader = ({
   };
 
   return (
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-      <Filters filterOptions={filterOptions} onFilterChange={onFilterChange} />
+    <>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+        <Filters filterOptions={filterOptions} onFilterChange={onFilterChange} />
+      </div>
 
       {videoUrl && (
-        <div className="w-full md:w-[320px]">
-          <div className="relative w-full aspect-video">
+        <div className="md:fixed md:top-[210px] md:right-4 w-full md:w-[320px] z-50">
+          <div className="relative w-full aspect-video bg-white rounded-lg shadow-lg">
             <iframe
-              className="w-full h-full rounded-lg shadow-md"
+              className="w-full h-full rounded-lg"
               src={getEmbedUrl(videoUrl)}
               title="YouTube video preview"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
           </div>
-          <div className="flex justify-between items-center mt-1">
+          <div className="flex justify-between items-center mt-1 bg-white/95 backdrop-blur-sm p-2 rounded-lg">
             <Button
               size="sm"
               variant="outline"
@@ -66,7 +68,7 @@ const TimelineHeader = ({
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
