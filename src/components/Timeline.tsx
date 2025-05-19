@@ -35,7 +35,7 @@ const Timeline = () => {
   const filteredEvents = useMemo(() => {
     if (!events || events.length === 0) return [];
 
-    return events
+    const sortedEvents = events
       .filter(event => {
         const eventStyles = Array.isArray(event.style)
           ? event.style
@@ -48,20 +48,39 @@ const Timeline = () => {
           !filterOptions.styles.some(style => eventStyles.includes(style))
         )
           return false;
-        //year range should have two sliders to chose a range properly
         if (event.year < filterOptions.yearRange[0] || event.year > filterOptions.yearRange[1])
           return false;
-        //this one is working good, provinces
         if (filterOptions.provinces.length > 0 && !filterOptions.provinces.includes(event.province))
           return false;
-        //this one is working good, cities
         if (filterOptions.cities.length > 0 && !filterOptions.cities.includes(event.city))
           return false;
 
         return true;
       })
       .sort((a, b) => a.year - b.year);
-  }, [events, filterOptions]);
+
+    // Group events by decades for veryZoomedOut view
+    if (veryZoomedOut) {
+      const groupedEvents = sortedEvents.reduce(
+        (groups, event) => {
+          const decade = Math.floor(event.year / 10) * 10;
+          if (!groups[decade]) {
+            groups[decade] = [];
+          }
+          groups[decade].push(event);
+          return groups;
+        },
+        {} as Record<number, typeof sortedEvents>
+      );
+
+      return Object.entries(groupedEvents).map(([decade, events]) => ({
+        decade: parseInt(decade),
+        events,
+      }));
+    }
+
+    return sortedEvents;
+  }, [events, filterOptions, veryZoomedOut]);
 
   // Collapse expanded card if very zoomed out
   useEffect(() => {

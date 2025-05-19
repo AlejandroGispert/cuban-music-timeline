@@ -2,8 +2,9 @@ import React, { useRef, useState, useEffect } from "react";
 import { TimelineEvent as TimelineEventType } from "@/types";
 import TimelineEvent from "./TimelineEvent";
 import debug from "debug";
+
 interface TimelineContentProps {
-  filteredEvents: TimelineEventType[];
+  filteredEvents: TimelineEventType[] | { decade: number; events: TimelineEventType[] }[];
   expandedEvent: string | null;
   toggleExpand: (id: string) => void;
   zoomedOut: boolean;
@@ -72,44 +73,75 @@ const TimelineContent = ({
       <div
         ref={scrollContainerRef}
         className="scroll-container whitespace-nowrap overflow-x-auto cursor-grab w-full"
-        style={{ paddingTop: "80px", paddingBottom: "80px" }} // space for cards above/below line
+        style={{ paddingTop: "80px", paddingBottom: "80px" }}
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
       >
-        {filteredEvents.map((event, index) => (
-          <div
-            key={event.id}
-            className={`inline-block align-top relative z-10 ${
-              index % 2 === 0 ? "translate-y-[-60px]" : "translate-y-[60px]"
-            }`}
-            style={{ width: 280, marginRight: 24 }}
-          >
-            <TimelineEvent
-              event={event}
-              index={index}
-              isLeft={index % 2 === 0}
-              isExpanded={expandedEvent === event.id.toString()}
-              onToggleExpand={() => toggleExpand(event.id.toString())}
-              zoomedOut={zoomedOut}
-              veryZoomedOut={veryZoomedOut}
-              onSelectVideo={(url: string) => setSelectedVideoUrl(url)}
-              superZoomedIn={superZoomedIn}
-            />
-
-            {/* Dot on timeline line */}
-            {expandedEvent !== event.id.toString() && (
+        {veryZoomedOut
+          ? // Render grouped events with decade labels
+            (filteredEvents as { decade: number; events: TimelineEventType[] }[]).map(
+              (group, groupIndex) => (
+                <div key={group.decade} className="inline-block">
+                  <div className="text-xs text-gray-400 text-center mb-2">{group.decade}s</div>
+                  <div className="flex items-center space-x-1">
+                    {group.events.map((event, index) => (
+                      <div
+                        key={event.id}
+                        className="inline-block"
+                        style={{ width: 40, marginRight: 2 }}
+                      >
+                        <TimelineEvent
+                          event={event}
+                          index={index}
+                          isLeft={index % 2 === 0}
+                          isExpanded={expandedEvent === event.id.toString()}
+                          onToggleExpand={() => toggleExpand(event.id.toString())}
+                          zoomedOut={zoomedOut}
+                          veryZoomedOut={veryZoomedOut}
+                          onSelectVideo={(url: string) => setSelectedVideoUrl(url)}
+                          superZoomedIn={superZoomedIn}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            )
+          : // Render normal timeline view
+            (filteredEvents as TimelineEventType[]).map((event, index) => (
               <div
-                className="w-3 h-3 rounded-full bg-gray-400 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
-                style={{
-                  top: index % 2 === 0 ? "132px" : "12px", // Higher dot when card is below
-                  pointerEvents: "none",
-                }}
-              ></div>
-            )}
-          </div>
-        ))}
+                key={event.id}
+                className={`inline-block align-top relative z-10 ${
+                  index % 2 === 0 ? "translate-y-[-60px]" : "translate-y-[60px]"
+                }`}
+                style={{ width: 280, marginRight: 24 }}
+              >
+                <TimelineEvent
+                  event={event}
+                  index={index}
+                  isLeft={index % 2 === 0}
+                  isExpanded={expandedEvent === event.id.toString()}
+                  onToggleExpand={() => toggleExpand(event.id.toString())}
+                  zoomedOut={zoomedOut}
+                  veryZoomedOut={veryZoomedOut}
+                  onSelectVideo={(url: string) => setSelectedVideoUrl(url)}
+                  superZoomedIn={superZoomedIn}
+                />
+
+                {/* Dot on timeline line */}
+                {expandedEvent !== event.id.toString() && (
+                  <div
+                    className="w-3 h-3 rounded-full bg-gray-400 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
+                    style={{
+                      top: index % 2 === 0 ? "132px" : "12px",
+                      pointerEvents: "none",
+                    }}
+                  ></div>
+                )}
+              </div>
+            ))}
       </div>
     </div>
   );

@@ -8,19 +8,28 @@ const MinimalEventDot = ({ isLeft, onToggleExpand, title }: MinimalEventDotProps
   return (
     <div
       className={`
-        relative flex items-center ${isLeft ? "justify-end mb-4" : "justify-start mt-4"}
+        relative flex items-center ${isLeft ? "justify-end" : "justify-start"}
+        group cursor-pointer
       `}
     >
-      {isLeft && <span className="mr-2 text-xs text-gray-500 whitespace-nowrap">{title}</span>}
+      {isLeft && (
+        <span className="mr-2 text-xs text-gray-500 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          {title}
+        </span>
+      )}
 
       <button
         onClick={onToggleExpand}
-        className="w-3.5 h-3.5 rounded-full bg-red-500 border-2 border-white hover:scale-110 transition-transform"
+        className="w-2 h-2 rounded-full bg-cuba-red hover:scale-110 transition-transform"
         aria-label={title}
         title={title}
       />
 
-      {!isLeft && <span className="ml-2 text-xs text-gray-500 whitespace-nowrap">{title}</span>}
+      {!isLeft && (
+        <span className="ml-2 text-xs text-gray-500 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          {title}
+        </span>
+      )}
     </div>
   );
 };

@@ -83,7 +83,11 @@ const TimelineEvent = ({
   };
 
   if (veryZoomedOut) {
-    return <MinimalEventDot isLeft={isLeft} onToggleExpand={onToggleExpand} title={event.title} />;
+    return (
+      <div className="flex items-center justify-center px-1">
+        <MinimalEventDot isLeft={isLeft} onToggleExpand={onToggleExpand} title={event.title} />
+      </div>
+    );
   }
   if (superZoomedIn) {
     return (
