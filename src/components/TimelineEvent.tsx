@@ -84,8 +84,18 @@ const TimelineEvent = ({
 
   if (veryZoomedOut) {
     return (
-      <div className="flex items-center justify-center px-1">
-        <MinimalEventDot isLeft={isLeft} onToggleExpand={onToggleExpand} title={event.title} />
+      <div
+        className="flex items-center justify-center px-1"
+        onClick={e => {
+          e.stopPropagation();
+          onToggleExpand();
+        }}
+      >
+        <MinimalEventDot
+          event={event}
+          onToggleExpand={onToggleExpand}
+          onSelectVideo={onSelectVideo || (() => {})}
+        />
       </div>
     );
   }
@@ -112,6 +122,7 @@ const TimelineEvent = ({
 
   return (
     <Card
+      id={`event-${event.id}`}
       className={`timeline-card ${isExpanded ? "expanded" : "collapsed"} ${
         isLeft ? "timeline-card-above" : "timeline-card-below"
       } ${zoomedOut ? "zoomed-out" : ""} transition-all duration-300 ease-in-out cursor-pointer w-full`}

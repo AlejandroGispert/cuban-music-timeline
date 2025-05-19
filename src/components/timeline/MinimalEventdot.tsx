@@ -1,35 +1,32 @@
+import React from "react";
+import { TimelineEvent as TimelineEventType } from "@/types";
+
 interface MinimalEventDotProps {
-  isLeft: boolean;
+  event: TimelineEventType;
   onToggleExpand: () => void;
-  title: string; // year or event title
+  onSelectVideo: (url: string) => void;
 }
 
-const MinimalEventDot = ({ isLeft, onToggleExpand, title }: MinimalEventDotProps) => {
+const MinimalEventDot = ({ event, onToggleExpand, onSelectVideo }: MinimalEventDotProps) => {
+  const displayTitle = event.title || `${event.year}`;
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event bubbling
+    onToggleExpand();
+  };
+
   return (
-    <div
-      className={`
-        relative flex items-center ${isLeft ? "justify-end" : "justify-start"}
-        group cursor-pointer
-      `}
-    >
-      {isLeft && (
-        <span className="mr-2 text-xs text-gray-500 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          {title}
-        </span>
-      )}
-
+    <div className="flex flex-col items-center">
       <button
-        onClick={onToggleExpand}
-        className="w-2 h-2 rounded-full bg-cuba-red hover:scale-110 transition-transform"
-        aria-label={title}
-        title={title}
-      />
-
-      {!isLeft && (
-        <span className="ml-2 text-xs text-gray-500 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          {title}
+        onClick={handleClick}
+        className="group relative flex flex-col items-center cursor-pointer"
+        aria-label={`View ${displayTitle}`}
+      >
+        <div className="w-2.5 h-2.5 rounded-full bg-cuba-red border border-red-300/30 shadow-sm group-hover:scale-110 group-hover:bg-red-500 transition-all duration-200" />
+        <span className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+          {displayTitle}
         </span>
-      )}
+      </button>
     </div>
   );
 };

@@ -94,7 +94,21 @@ const Timeline = () => {
   };
 
   const toggleExpand = (eventId: string) => {
-    if (veryZoomedOut) return;
+    if (veryZoomedOut) {
+      // When clicking a minimal dot, exit veryZoomedOut and navigate to the event
+      setZoomLevel(50); // Set to normal zoom level
+      setExpandedEvent(eventId);
+
+      // Use setTimeout to ensure the DOM has updated with the new zoom level
+      setTimeout(() => {
+        const eventElement = document.getElementById(`event-${eventId}`);
+        if (eventElement) {
+          eventElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 100);
+
+      return;
+    }
     setExpandedEvent(prev => (prev === eventId ? null : eventId));
   };
 
