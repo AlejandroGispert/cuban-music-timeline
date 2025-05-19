@@ -18,7 +18,7 @@ const Index = () => {
   }, [province, city]);
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-white">
       <Header />
       <main className="flex-1 py-8 bg-gradient-to-b from-white to-gray-50">
         <div className="container mx-auto px-0 md:px-4">

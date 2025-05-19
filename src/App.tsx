@@ -50,7 +50,6 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      {/* ✅ Show consent banner globally */}
       <ConsentBanner />
       <RouterProvider router={router} />
     </TooltipProvider>
