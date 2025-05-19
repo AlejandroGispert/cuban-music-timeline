@@ -92,7 +92,7 @@ const Timeline = () => {
   };
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-0 md:px-4">
       <TimelineHeader
         filterOptions={filterOptions}
         onFilterChange={handleFilterChange}

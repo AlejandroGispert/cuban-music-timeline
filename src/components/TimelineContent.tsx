@@ -60,7 +60,7 @@ const TimelineContent = ({
   }
 
   return (
-    <div className="relative min-h-[300px] w-full px-4">
+    <div className="relative min-h-[300px] w-full">
       {/* Timeline center line */}
       <div
         className="absolute left-0 w-full h-[2px] bg-red-300 z-0"
@@ -69,7 +69,7 @@ const TimelineContent = ({
       {/* Scroll container with drag support */}
       <div
         ref={scrollContainerRef}
-        className="scroll-container whitespace-nowrap overflow-x-auto cursor-grab"
+        className="scroll-container whitespace-nowrap overflow-x-auto cursor-grab w-full"
         style={{ paddingTop: "80px", paddingBottom: "80px" }} // space for cards above/below line
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
