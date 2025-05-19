@@ -24,7 +24,7 @@ const queryClient = new QueryClient();
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <>
+    <Route errorElement={<ErrorBoundary />}>
       <Route path="/" element={<Index />} />
       <Route path="/map" element={<MapView />} />
       <Route
@@ -37,7 +37,7 @@ const router = createBrowserRouter(
       />
       <Route path="/auth" element={<Authentication />} />
       <Route path="*" element={<NotFound />} />
-    </>
+    </Route>
   ),
   {
     future: {
@@ -52,9 +52,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <ConsentBanner />
-      <ErrorBoundary>
-        <RouterProvider router={router} />
-      </ErrorBoundary>
+      <RouterProvider router={router} />
     </TooltipProvider>
   </QueryClientProvider>
 );
