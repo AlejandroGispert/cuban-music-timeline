@@ -8,6 +8,7 @@ interface TimelineContentProps {
   toggleExpand: (id: string) => void;
   zoomedOut: boolean;
   veryZoomedOut: boolean;
+  superZoomedIn: boolean;
   resetFilters: () => void;
   setSelectedVideoUrl: (url: string | undefined) => void;
 }
@@ -18,6 +19,7 @@ const TimelineContent = ({
   toggleExpand,
   zoomedOut,
   veryZoomedOut,
+  superZoomedIn,
   resetFilters,
   setSelectedVideoUrl,
 }: TimelineContentProps) => {
@@ -93,6 +95,7 @@ const TimelineContent = ({
               zoomedOut={zoomedOut}
               veryZoomedOut={veryZoomedOut}
               onSelectVideo={(url: string) => setSelectedVideoUrl(url)}
+              superZoomedIn={superZoomedIn}
             />
 
             {/* Dot on timeline line */}

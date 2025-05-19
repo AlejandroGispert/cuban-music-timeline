@@ -24,6 +24,7 @@ const Timeline = () => {
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | undefined>(undefined);
   const zoomedOut = zoomLevel < 30;
   const veryZoomedOut = zoomLevel < 10;
+  const superZoomedIn = zoomLevel > 90;
 
   // Load events only once
   useEffect(() => {
@@ -114,6 +115,7 @@ const Timeline = () => {
             veryZoomedOut={veryZoomedOut}
             resetFilters={resetFilters}
             setSelectedVideoUrl={setSelectedVideoUrl}
+            superZoomedIn={superZoomedIn}
           />
         )}
 

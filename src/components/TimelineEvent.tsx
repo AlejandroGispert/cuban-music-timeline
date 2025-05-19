@@ -17,6 +17,7 @@ interface TimelineEventProps {
   onToggleExpand: () => void;
   zoomedOut?: boolean;
   veryZoomedOut?: boolean;
+  superZoomedIn?: boolean;
   onSelectVideo?: (url: string) => void;
 }
 
@@ -28,6 +29,7 @@ const TimelineEvent = ({
   onToggleExpand,
   zoomedOut = false,
   veryZoomedOut = false,
+  superZoomedIn = false,
   onSelectVideo,
 }: TimelineEventProps) => {
   const dragStartX = useRef<number | null>(null);
@@ -82,6 +84,26 @@ const TimelineEvent = ({
 
   if (veryZoomedOut) {
     return <MinimalEventDot isLeft={isLeft} onToggleExpand={onToggleExpand} title={event.title} />;
+  }
+  if (superZoomedIn) {
+    return (
+      <Card className="timeline-card super-zoomed shadow-lg scale-[1.05]">
+        <DetailedEventHeader
+          title={event.title}
+          date={event.date}
+          style={stylesArray}
+          city={event.city}
+          province={event.province}
+        />
+        <ExpandedEventContent
+          description={event.description}
+          youtubeId={youtubeId}
+          title={event.title}
+          onVideoClick={handleVideoClick}
+          isExpanded={true}
+        />
+      </Card>
+    );
   }
 
   return (
