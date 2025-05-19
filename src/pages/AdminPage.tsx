@@ -14,25 +14,76 @@ import EventList from "../components/admin/EventList";
 import ConfirmDeleteDialog from "../components/admin/ConfirmDeleteDialog";
 import AccessCodeManager from "../components/admin/AccessCodeManager";
 import { useAuth } from "@/hooks/useAuth";
+import { Loader2 } from "lucide-react";
 
 const AdminPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { events, createEvent, deleteEvent, updateEvent, loadEvents } = useHistoricEvents();
-
+  const { events, createEvent, deleteEvent, updateEvent, loadEvents, isLoading, error } =
+    useHistoricEvents();
   const [editingEvent, setEditingEvent] = useState<Partial<TimelineEvent> | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const loadCalled = useRef(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const translateElementRef = useRef<HTMLDivElement>(null);
+
+  // Initialize Google Translate
+  useEffect(() => {
+    // Create a script element
+    const script = document.createElement("script");
+    script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+    script.async = true;
+
+    // Define the initialization function
+    window.googleTranslateElementInit = function () {
+      const element = document.getElementById("google_translate_element");
+      if (!element) return;
+
+      try {
+        // @ts-expect-error - Google Translate types are not available
+        new window.google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "es,en",
+            layout: 0, // SIMPLE
+            autoDisplay: false,
+          },
+          "google_translate_element"
+        );
+      } catch (error) {
+        console.error("Error initializing Google Translate:", error);
+      }
+    };
+
+    // Add error handling
+    script.onerror = error => {
+      console.error("Error loading Google Translate script:", error);
+    };
+
+    // Add the script to the document
+    document.body.appendChild(script);
+
+    return () => {
+      // Cleanup
+      window.googleTranslateElementInit = function () {};
+      script.remove();
+    };
+  }, []);
 
   // Load events on mount, only once
   useEffect(() => {
-    if (!loadCalled.current) {
-      console.log("Loading events in AdminPage...");
-      loadEvents();
-      loadCalled.current = true;
-    }
-  }, []); // Remove loadEvents from dependencies
+    const loadInitialEvents = async () => {
+      if (user?.role === "admin" && !loadCalled.current) {
+        console.log("Loading events in AdminPage...");
+        await loadEvents();
+        loadCalled.current = true;
+        setIsInitialLoad(false);
+      }
+    };
+
+    loadInitialEvents();
+  }, [user, loadEvents]);
 
   // Verify admin access
   useEffect(() => {
@@ -108,6 +159,31 @@ const AdminPage = () => {
     setPendingDeleteId(null);
   };
 
+  // Only show loading state during initial load
+  if (isInitialLoad && isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Loader2 className="h-32 w-32 ml-[70px] animate-spin mx-auto mb-4 text-cuba-red" />
+          <h2 className="text-2xl font-semibold mb-4">Loading events...</h2>
+          <p className="text-gray-500">Please wait while we fetch your events.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold mb-4 text-red-600">Error Loading Events</h2>
+          <p className="text-gray-500 mb-4">{error}</p>
+          <Button onClick={() => loadEvents()}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
@@ -141,6 +217,13 @@ const AdminPage = () => {
         open={showConfirmDelete}
         onCancel={() => setShowConfirmDelete(false)}
         onConfirm={handleDelete}
+      />
+
+      {/* Add Google Translate element */}
+      <div
+        id="google_translate_element"
+        ref={translateElementRef}
+        className="fixed bottom-4 right-4 z-50"
       />
     </div>
   );

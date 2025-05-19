@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { toast } from "@/hooks/use-toast";
-import { Mail, Lock, Key } from "lucide-react";
+import { Mail, Lock, Key, Loader2 } from "lucide-react";
 import {
   Card,
   CardHeader,
@@ -45,6 +45,7 @@ const Authentication = () => {
   const { user, isAuthenticated, isLoading, error, login, signup, checkAuth } = useAuth();
   const [authError, setAuthError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>("login");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Single effect to handle navigation after auth
   useEffect(() => {
@@ -75,31 +76,52 @@ const Authentication = () => {
 
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
     setAuthError(null);
-    const success = await login(values.email, values.password);
-
-    if (success) {
-      toast({
-        title: "Login successful",
-        description: `Welcome back, ${values.email}!`,
-      });
-    } else {
-      setAuthError(error || "Authentication failed");
+    setIsSubmitting(true);
+    try {
+      const success = await login(values.email, values.password);
+      if (success) {
+        toast({
+          title: "Login successful",
+          description: `Welcome back, ${values.email}!`,
+        });
+      } else {
+        setAuthError(error || "Authentication failed");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleSignup = async (values: z.infer<typeof signupSchema>) => {
     setAuthError(null);
-    const success = await signup(values.email, values.password, values.accessCode);
-
-    if (success) {
-      toast({
-        title: "Signup successful",
-        description: `Welcome, ${values.email}!`,
-      });
-    } else {
-      setAuthError(error || "Signup failed");
+    setIsSubmitting(true);
+    try {
+      const success = await signup(values.email, values.password, values.accessCode);
+      if (success) {
+        toast({
+          title: "Signup successful",
+          description: `Welcome, ${values.email}!`,
+        });
+      } else {
+        setAuthError(error || "Signup failed");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  // Show loading state only during initial auth check
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-cuba-red" />
+          <h2 className="text-xl font-semibold mb-2">Loading...</h2>
+          <p className="text-sm text-gray-500">Please wait while we prepare the login page.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-100 p-4">
@@ -174,8 +196,15 @@ const Authentication = () => {
                     )}
                   />
 
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Logging in..." : "Log In"}
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Logging in...
+                      </>
+                    ) : (
+                      "Log In"
+                    )}
                   </Button>
                 </form>
               </Form>
@@ -248,8 +277,15 @@ const Authentication = () => {
                     )}
                   />
 
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Signing up..." : "Sign Up"}
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Signing up...
+                      </>
+                    ) : (
+                      "Sign Up"
+                    )}
                   </Button>
                 </form>
               </Form>

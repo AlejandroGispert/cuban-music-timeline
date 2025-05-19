@@ -20,13 +20,11 @@ export function useAuth() {
     error: null,
   });
 
-  // Add a ref to track if we've already checked auth
   const hasCheckedAuth = useRef(false);
   const checkInProgress = useRef(false);
   const lastAuthState = useRef(authState);
 
   const checkAuth = async () => {
-    // Prevent multiple simultaneous checks
     if (checkInProgress.current) {
       console.log("Auth check already in progress, skipping...");
       return false;
@@ -34,6 +32,7 @@ export function useAuth() {
 
     try {
       checkInProgress.current = true;
+
       const { session } = await getSession();
       const { user } = await getUser();
 
@@ -56,52 +55,35 @@ export function useAuth() {
       });
 
       if (session && user) {
-        // Ensure we get the role from user metadata
         const userWithRole = {
           ...user,
           role: session.user.user_metadata?.role || user.role,
         };
 
-        // Only update state if it's different
-        if (
-          JSON.stringify(lastAuthState.current) !==
-          JSON.stringify({
-            user: userWithRole,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null,
-          })
-        ) {
+        const newState = {
+          user: userWithRole,
+          isAuthenticated: true,
+          isLoading: false,
+          error: null,
+        };
+
+        if (JSON.stringify(lastAuthState.current) !== JSON.stringify(newState)) {
           console.log("Setting auth state with user:", userWithRole);
-          const newState = {
-            user: userWithRole,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null,
-          };
           lastAuthState.current = newState;
           setAuthState(newState);
         }
         return true;
       }
 
-      // Only update state if it's different
-      if (
-        JSON.stringify(lastAuthState.current) !==
-        JSON.stringify({
-          user: null,
-          isAuthenticated: false,
-          isLoading: false,
-          error: null,
-        })
-      ) {
+      const newState = {
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: null,
+      };
+
+      if (JSON.stringify(lastAuthState.current) !== JSON.stringify(newState)) {
         console.log("No valid session or user found");
-        const newState = {
-          user: null,
-          isAuthenticated: false,
-          isLoading: false,
-          error: null,
-        };
         lastAuthState.current = newState;
         setAuthState(newState);
       }
@@ -134,58 +116,40 @@ export function useAuth() {
       if (event === "SIGNED_IN" && session) {
         const { user } = await getUser();
         if (user && mounted) {
-          // Ensure we get the role from user metadata
           const userWithRole = {
             ...user,
             role: session.user.user_metadata?.role || user.role,
           };
 
-          // Only update state if it's different
-          if (
-            JSON.stringify(lastAuthState.current) !==
-            JSON.stringify({
-              user: userWithRole,
-              isAuthenticated: true,
-              isLoading: false,
-              error: null,
-            })
-          ) {
+          const newState = {
+            user: userWithRole,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          };
+
+          if (JSON.stringify(lastAuthState.current) !== JSON.stringify(newState)) {
             console.log("User authenticated:", userWithRole);
-            const newState = {
-              user: userWithRole,
-              isAuthenticated: true,
-              isLoading: false,
-              error: null,
-            };
             lastAuthState.current = newState;
             setAuthState(newState);
           }
         }
-      } else if (event === "SIGNED_OUT" && mounted) {
-        // Only update state if it's different
-        if (
-          JSON.stringify(lastAuthState.current) !==
-          JSON.stringify({
-            user: null,
-            isAuthenticated: false,
-            isLoading: false,
-            error: null,
-          })
-        ) {
+      } else if (event === "SIGNED_OUT") {
+        const newState = {
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          error: null,
+        };
+
+        if (JSON.stringify(lastAuthState.current) !== JSON.stringify(newState)) {
           console.log("User signed out");
-          const newState = {
-            user: null,
-            isAuthenticated: false,
-            isLoading: false,
-            error: null,
-          };
           lastAuthState.current = newState;
           setAuthState(newState);
         }
       }
     });
 
-    // Only do initial session check if we haven't already
     if (!hasCheckedAuth.current) {
       checkAuth();
       hasCheckedAuth.current = true;
@@ -273,6 +237,7 @@ export function useAuth() {
   };
 
   const handleLogout = async () => {
+    setAuthState(prev => ({ ...prev, isLoading: true }));
     await logout();
     setAuthState({ user: null, isAuthenticated: false, isLoading: false, error: null });
   };
