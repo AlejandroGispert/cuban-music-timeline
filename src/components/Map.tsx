@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import CubaMap from "@/components/CubaMap";
+import CubaMap, { CubaMapRef } from "@/components/CubaMap";
 import { useHistoricEvents } from "@/hooks/useHistoricEvents";
 
 const Map = () => {
   const navigate = useNavigate();
   const { events, loadEvents } = useHistoricEvents();
   const loadEventsCalled = useRef(false);
+  const mapRef = useRef<CubaMapRef>(null);
 
   const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
   const [hoveredProvince, setHoveredProvince] = useState<string | null>(null);
@@ -46,14 +47,13 @@ const Map = () => {
     setAllCities([...citiesSet].sort());
   }, [events]);
 
-  // Zoom + navigate
-  const handleProvinceClick = useCallback(
-    (province: string) => {
-      setSelectedProvince(province);
-      navigate(`/?province=${encodeURIComponent(province)}`);
-    },
-    [navigate]
-  );
+  // Handle province click
+  const handleProvinceClick = useCallback((province: string) => {
+    setSelectedProvince(province);
+    if (mapRef.current) {
+      mapRef.current.zoomToProvince(province);
+    }
+  }, []);
 
   return (
     <div className="container mx-auto px-0 md:px-4 py-8">
@@ -69,6 +69,7 @@ const Map = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-blue-50 rounded-lg p-0 md:p-4 relative min-h-[400px] flex items-center justify-center">
             <CubaMap
+              ref={mapRef}
               eventCounts={eventCounts}
               onProvinceClick={handleProvinceClick}
               selectedProvince={selectedProvince}
@@ -82,17 +83,17 @@ const Map = () => {
                 <Card
                   key={province}
                   className={`cursor-pointer transition-all ${
-                    hoveredProvince === province ? "border-cuba-blue shadow-md" : "border-gray-200"
+                    selectedProvince === province ? "border-cuba-blue shadow-md" : "border-gray-200"
                   }`}
                   onClick={() => handleProvinceClick(province)}
                   onMouseEnter={() => setHoveredProvince(province)}
-                  onMouseLeave={() => setHoveredProvince(null)}
+                  onMouseLeave={() => selectedProvince !== province && setHoveredProvince(null)}
                 >
                   <CardContent className="p-4 flex items-center justify-between">
                     <div>
                       <p className="font-medium">{province}</p>
                       <p className="text-xs text-gray-500">
-                        {eventCounts[province] || 0} musical events
+                        {eventCounts[province] || 0} Historical music events
                       </p>
                     </div>
                     <Badge variant="outline" className="bg-cuba-blue/10 border-cuba-blue/20">
