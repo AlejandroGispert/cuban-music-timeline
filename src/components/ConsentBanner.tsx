@@ -93,23 +93,25 @@ const ConsentBanner = () => {
   if (!showBanner) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 w-full bg-gray-800 text-white p-4 flex justify-between items-center z-[9999] shadow-lg">
-      <p className="text-sm">
-        🎶 We use cookies for statistics, to enhance your Cuban music journey. Is that ok?
-      </p>
-      <div className="space-x-2">
-        <button
-          className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded transition-colors"
-          onClick={() => handleConsent("granted")}
-        >
-          Accept
-        </button>
-        <button
-          className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded transition-colors"
-          onClick={() => handleConsent("denied")}
-        >
-          Reject
-        </button>
+    <div className="fixed bottom-0 left-0 right-0 w-full bg-gray-800 text-white p-4 z-[9999] shadow-lg">
+      <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p className="text-sm text-center sm:text-left">
+          🎶 We use cookies for statistics, to enhance your Cuban music journey. Is that ok?
+        </p>
+        <div className="flex gap-3 w-full sm:w-auto">
+          <button
+            className="flex-1 sm:flex-none bg-green-500 hover:bg-green-600 px-4 py-2 rounded transition-colors text-sm font-medium"
+            onClick={() => handleConsent("granted")}
+          >
+            Accept
+          </button>
+          <button
+            className="flex-1 sm:flex-none bg-red-500 hover:bg-red-600 px-4 py-2 rounded transition-colors text-sm font-medium"
+            onClick={() => handleConsent("denied")}
+          >
+            Reject
+          </button>
+        </div>
       </div>
     </div>
   );
