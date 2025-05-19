@@ -26,22 +26,23 @@ const Header = () => {
             Ritmos Cubanos
           </h1>
         </div>
-        
+
         <nav className="hidden md:flex items-center space-x-6">
-          <Link 
-            to="/" 
-            className={`font-medium ${location.pathname === '/' ? 'text-cuba-red' : 'text-gray-600 hover:text-cuba-red'}`}
+          <div id="google_translate_element" className="ml-auto" />
+          <Link
+            to="/"
+            className={`font-medium ${location.pathname === "/" ? "text-cuba-red" : "text-gray-600 hover:text-cuba-red"}`}
           >
             Timeline
           </Link>
-          <Link 
-            to="/map" 
-            className={`font-medium ${location.pathname === '/map' ? 'text-cuba-red' : 'text-gray-600 hover:text-cuba-red'}`}
+          <Link
+            to="/map"
+            className={`font-medium ${location.pathname === "/map" ? "text-cuba-red" : "text-gray-600 hover:text-cuba-red"}`}
           >
             Map
           </Link>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="border-cuba-gold text-cuba-gold hover:bg-cuba-gold/10 hover:text-cuba-gold"
             onClick={handleSupportClick}
           >
@@ -49,17 +50,39 @@ const Header = () => {
           </Button>
         </nav>
 
-        <button 
-          className="md:hidden text-gray-600 focus:outline-none" 
+        <button
+          className="md:hidden text-gray-600 focus:outline-none"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           {isMenuOpen ? (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           )}
         </button>
@@ -69,22 +92,22 @@ const Header = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-b pb-4 px-4 animate-fade-in">
           <nav className="flex flex-col space-y-4">
-            <Link 
-              to="/" 
-              className={`font-medium p-2 rounded ${location.pathname === '/' ? 'bg-cuba-red/10 text-cuba-red' : 'text-gray-600'}`}
+            <Link
+              to="/"
+              className={`font-medium p-2 rounded ${location.pathname === "/" ? "bg-cuba-red/10 text-cuba-red" : "text-gray-600"}`}
               onClick={() => setIsMenuOpen(false)}
             >
               Timeline
             </Link>
-            <Link 
-              to="/map" 
-              className={`font-medium p-2 rounded ${location.pathname === '/map' ? 'bg-cuba-red/10 text-cuba-red' : 'text-gray-600'}`}
+            <Link
+              to="/map"
+              className={`font-medium p-2 rounded ${location.pathname === "/map" ? "bg-cuba-red/10 text-cuba-red" : "text-gray-600"}`}
               onClick={() => setIsMenuOpen(false)}
             >
               Map
             </Link>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="border-cuba-gold text-cuba-gold hover:bg-cuba-gold/10"
               onClick={handleSupportClick}
             >
