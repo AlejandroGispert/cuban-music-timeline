@@ -1,19 +1,55 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AdDialog } from "@/components/AdDialog";
+
+declare global {
+  interface Window {
+    googleTranslateElementInit?: () => void;
+  }
+}
 
 const Header = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAdDialogOpen, setIsAdDialogOpen] = useState(false);
+  const [isTranslateReady, setIsTranslateReady] = useState(false);
 
   const handleSupportClick = () => {
     setIsAdDialogOpen(true);
-    if (isMenuOpen) {
-      setIsMenuOpen(false);
-    }
+    if (isMenuOpen) setIsMenuOpen(false);
   };
+
+  // Load Google Translate script on mount
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+    script.async = true;
+    script.onerror = () => setIsTranslateReady(false);
+    document.head.appendChild(script);
+
+    // Define global init function
+    window.googleTranslateElementInit = () => {
+      new window.google.translate.TranslateElement(
+        {
+          pageLanguage: "en",
+          includedLanguages: "en,es,fr,de,pt,it,ru,zh-CN,ja,ko,ar,hi,bn,pa,tr,vi,pl,nl,fa,sw",
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false,
+          multilanguagePage: true,
+        },
+        "google_translate_element"
+      );
+      setIsTranslateReady(true);
+    };
+
+    // Timeout fallback if script loads but widget fails
+    const timeout = setTimeout(() => {
+      setIsTranslateReady(true); // Show "unavailable" message
+    }, 5000);
+
+    return () => clearTimeout(timeout);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b shadow-sm">
@@ -28,7 +64,16 @@ const Header = () => {
         </div>
 
         <nav className="hidden md:flex items-center space-x-6">
-          <div id="google_translate_element" className="ml-auto" />
+          {/* Translate Component */}
+          <div className="min-w-[130px] text-sm text-gray-600">
+            {!isTranslateReady ? (
+              <span className="text-xs text-gray-500">Loading translator...</span>
+            ) : (
+              <div id="google_translate_element" />
+            )}
+          </div>
+
+          {/* Navigation */}
           <Link
             to="/"
             className={`font-medium ${location.pathname === "/" ? "text-cuba-red" : "text-gray-600 hover:text-cuba-red"}`}
@@ -50,6 +95,7 @@ const Header = () => {
           </Button>
         </nav>
 
+        {/* Mobile Toggle */}
         <button
           className="md:hidden text-gray-600 focus:outline-none"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
