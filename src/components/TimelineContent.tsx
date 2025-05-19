@@ -131,7 +131,7 @@ const TimelineContent = ({
                 />
 
                 {/* Dot on timeline line */}
-                {expandedEvent !== event.id.toString() && (
+                {expandedEvent !== event.id.toString() && !superZoomedIn && (
                   <button
                     onClick={() => toggleExpand(event.id.toString())}
                     className="w-3 h-3 rounded-full bg-gray-400 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 hover:scale-110 hover:bg-cuba-red transition-all duration-200 cursor-pointer"
