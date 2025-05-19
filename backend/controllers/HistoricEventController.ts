@@ -18,12 +18,17 @@ export class HistoricEventController {
         .from("historic_events")
         .select("*", { count: "exact", head: true });
 
-      //  console.log("Table count:", count, "Count error:", countError);
-
-      // Now fetch the actual data
+      // Now fetch the actual data with user information
       const { data, error } = await supabase
         .from("historic_events")
-        .select("*")
+        .select(
+          `
+          *,
+          users!created_by (
+            username
+          )
+        `
+        )
         .order("year", { ascending: true });
 
       if (error) {
@@ -31,16 +36,16 @@ export class HistoricEventController {
         return { error: "Failed to fetch events", status: 500 };
       }
 
-      // console.log("Raw data from Supabase:", data);
       console.log("Number of events:", data?.length);
 
-      // if (data && data.length > 0) {
-      //   console.log("Sample event:", data[0]);
-      // }
-
-      const timelineEvents = data.map(HistoricEventModel.toTimelineEvent);
-      //   console.log("Converted timeline events:", timelineEvents);
-      //   console.log("Number of converted events:", timelineEvents.length);
+      const timelineEvents = data.map(event => {
+        const timelineEvent = HistoricEventModel.toTimelineEvent(event);
+        // Add creator information
+        timelineEvent.creator = {
+          username: event.users?.username,
+        };
+        return timelineEvent;
+      });
 
       return { data: timelineEvents, status: 200 };
     } catch (error) {

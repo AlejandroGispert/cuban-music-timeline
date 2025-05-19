@@ -15,6 +15,10 @@ export interface TimelineEvent {
   videoUrl: string; // Optional YouTube link
   thumbnailUrl?: string;
   createdBy?: string; // Optional image for display
+  creator?: {
+    email?: string;
+    username?: string;
+  };
 }
 
 /**
