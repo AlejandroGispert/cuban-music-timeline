@@ -28,12 +28,12 @@ const TimelineHeader = ({
   };
 
   return (
-    <div className="flex justify-between items-center mb-4">
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
       <Filters filterOptions={filterOptions} onFilterChange={onFilterChange} />
 
-      <div className="flex gap-2 items-center">
-        {videoUrl && (
-          <div className="relative w-[320px] h-[180px]">
+      {videoUrl && (
+        <div className="w-full md:w-[320px]">
+          <div className="relative w-full aspect-video">
             <iframe
               className="w-full h-full rounded-lg shadow-md"
               src={getEmbedUrl(videoUrl)}
@@ -41,31 +41,31 @@ const TimelineHeader = ({
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
-            <div className="flex justify-between items-center mt-1">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => window.open(getOriginalUrl(videoUrl), "_blank")}
-                className="flex items-center gap-1"
-              >
-                Open in YouTube
-                <ExternalLink className="w-4 h-4" />
-              </Button>
-
-              {clearVideo && (
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="bg-white/80 hover:bg-white"
-                  onClick={clearVideo}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              )}
-            </div>
           </div>
-        )}
-      </div>
+          <div className="flex justify-between items-center mt-1">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => window.open(getOriginalUrl(videoUrl), "_blank")}
+              className="flex items-center gap-1"
+            >
+              Open in YouTube
+              <ExternalLink className="w-4 h-4" />
+            </Button>
+
+            {clearVideo && (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="bg-white/80 hover:bg-white"
+                onClick={clearVideo}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

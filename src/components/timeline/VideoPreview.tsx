@@ -13,7 +13,7 @@ const VideoPreview = ({ youtubeId, title, onVideoClick }: VideoPreviewProps) => 
 
   return (
     <div
-      className="relative w-full h-[180px] rounded-md overflow-hidden shadow-md cursor-pointer group"
+      className="relative w-full aspect-video rounded-md overflow-hidden shadow-md cursor-pointer group"
       onClick={onVideoClick}
     >
       <iframe
@@ -37,6 +37,7 @@ const VideoPreview = ({ youtubeId, title, onVideoClick }: VideoPreviewProps) => 
           viewBox="0 0 24 24"
           fill="white"
           stroke="none"
+          className="w-12 h-12 md:w-16 md:h-16"
         >
           <polygon points="5 3 19 12 5 21 5 3" />
         </svg>
