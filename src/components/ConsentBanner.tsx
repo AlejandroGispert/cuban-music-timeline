@@ -99,17 +99,18 @@ const ConsentBanner = () => {
           🎶 We use cookies for statistics, to enhance your Cuban music journey. Is that ok?
         </p>
         <div className="flex gap-3 w-full sm:w-auto">
-          <button
-            className="flex-1 sm:flex-none bg-green-500 hover:bg-green-600 px-4 py-2 rounded transition-colors text-sm font-medium"
-            onClick={() => handleConsent("granted")}
-          >
-            Accept
-          </button>
+          {" "}
           <button
             className="flex-1 sm:flex-none bg-red-500 hover:bg-red-600 px-4 py-2 rounded transition-colors text-sm font-medium"
             onClick={() => handleConsent("denied")}
           >
             Reject
+          </button>
+          <button
+            className="flex-1 sm:flex-none bg-green-500 hover:bg-green-600 px-4 py-2 rounded transition-colors text-sm font-medium"
+            onClick={() => handleConsent("granted")}
+          >
+            Accept
           </button>
         </div>
       </div>
