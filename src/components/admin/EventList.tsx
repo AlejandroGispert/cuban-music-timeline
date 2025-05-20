@@ -15,9 +15,14 @@ import {
 } from "@/components/ui/select";
 import { useHistoricEvents } from "@/hooks/useHistoricEvents";
 
-const EventList = () => {
-  const { events, loadEvents, isLoading, error, updateEvent, deleteEvent } =
-    useHistoricEvents(true);
+interface EventListProps {
+  events: TimelineEvent[];
+  onEdit: (event: TimelineEvent) => void;
+  onDelete: (id: string) => void;
+}
+
+const EventList = ({ events, onEdit, onDelete }: EventListProps) => {
+  const { loadEvents, isLoading, error } = useHistoricEvents(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(9); // Default to 9 items (3x3 grid)
@@ -99,14 +104,10 @@ const EventList = () => {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" onClick={() => updateEvent(e.id!.toString(), e)}>
+                <Button size="sm" onClick={() => onEdit(e)}>
                   <Pencil size={16} />
                 </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => deleteEvent(e.id!.toString())}
-                >
+                <Button size="sm" variant="destructive" onClick={() => onDelete(e.id!.toString())}>
                   <Trash2 size={16} />
                 </Button>
               </div>
