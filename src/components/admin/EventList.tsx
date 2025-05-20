@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2, Pencil, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import EventStyleBadges from "../timeline/EventStyleBadges";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -13,17 +13,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useHistoricEvents } from "@/hooks/useHistoricEvents";
 
-interface Props {
-  events: TimelineEvent[];
-  onEdit: (event: TimelineEvent) => void;
-  onDelete: (id: string) => void;
-}
-
-const EventList: React.FC<Props> = ({ events, onEdit, onDelete }) => {
+const EventList = () => {
+  const { events, loadEvents, isLoading, error, updateEvent, deleteEvent } =
+    useHistoricEvents(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(9); // Default to 9 items (3x3 grid)
+
+  // Load events when component mounts
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
 
   const filteredEvents = events.filter(event =>
     event.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -40,6 +42,14 @@ const EventList: React.FC<Props> = ({ events, onEdit, onDelete }) => {
     setSearchQuery(value);
     setCurrentPage(1);
   };
+
+  if (isLoading) {
+    return <div>Loading events...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">Error: {error}</div>;
+  }
 
   return (
     <div className="space-y-4 mt-8">
@@ -71,7 +81,6 @@ const EventList: React.FC<Props> = ({ events, onEdit, onDelete }) => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="9">9 per page</SelectItem>
-
               <SelectItem value="18">18 per page</SelectItem>
             </SelectContent>
           </Select>
@@ -85,16 +94,19 @@ const EventList: React.FC<Props> = ({ events, onEdit, onDelete }) => {
               <div>
                 <p className="font-bold h-12 line-clamp-2">{e.title}</p>
                 <p className="text-sm text-gray-600">{e.date}</p>
-
                 <div className="mt-2 flex flex-wrap gap-1 text-xs">
                   <EventStyleBadges styles={e.style} />
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" onClick={() => onEdit(e)}>
+                <Button size="sm" onClick={() => updateEvent(e.id!.toString(), e)}>
                   <Pencil size={16} />
                 </Button>
-                <Button size="sm" variant="destructive" onClick={() => onDelete(e.id.toString())}>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => deleteEvent(e.id!.toString())}
+                >
                   <Trash2 size={16} />
                 </Button>
               </div>

@@ -13,21 +13,14 @@ export class HistoricEventController {
     try {
       console.log("Fetching all events from Supabase...");
 
-      // Fetch events with user data in a single query using join
+      // Fetch events without user data for regular view
       const { data, error } = await supabase
         .from("historic_events")
-        .select(
-          `
-          *,
-          users!created_by (
-            username
-          )
-        `
-        )
+        .select("*")
         .order("year", { ascending: true });
 
       if (error) {
-        // console.error("Supabase fetch error:", error);
+        console.error("Supabase fetch error:", error);
         return { error: "Failed to fetch events", status: 500 };
       }
 
@@ -35,18 +28,95 @@ export class HistoricEventController {
         return { data: [], status: 200 };
       }
 
+      // Transform events without user data
+      const timelineEvents = data.map(event => HistoricEventModel.toTimelineEvent(event));
+
+      return { data: timelineEvents, status: 200 };
+    } catch (error) {
+      console.error("Error fetching historic events:", error);
+      return {
+        error: "Failed to fetch historic events",
+        status: 500,
+      };
+    }
+  }
+
+  async getAllEventsWithUserData(): Promise<ApiResponse<TimelineEvent[]>> {
+    try {
+      console.log("Fetching all events with user data from Supabase...");
+
+      // Fetch events with user data for admin view - only select needed fields
+      const { data, error } = await supabase
+        .from("historic_events")
+        .select(
+          `
+          id,
+          title,
+          date,
+          year,
+          city,
+          province,
+          styles,
+          description,
+          video_url,
+          thumbnail_url,
+          created_by,
+          users!left (
+            username
+          )
+        `
+        )
+        .order("year", { ascending: true });
+
+      if (error) {
+        console.error("Supabase fetch error:", error);
+        return { error: "Failed to fetch events", status: 500 };
+      }
+
+      console.log("Raw data from Supabase:", JSON.stringify(data, null, 2));
+
+      if (!data?.length) {
+        return { data: [], status: 200 };
+      }
+
       // Transform events with user data
       const timelineEvents = data.map(event => {
-        const timelineEvent = HistoricEventModel.toTimelineEvent(event);
+        console.log("Processing event:", event.id, "Users data:", event.users);
+
+        // First convert to TimelineEvent without creator
+        const timelineEvent = HistoricEventModel.toTimelineEvent({
+          id: event.id,
+          title: event.title,
+          date: event.date,
+          year: event.year,
+          city: event.city,
+          province: event.province,
+          styles: event.styles,
+          description: event.description,
+          video_url: event.video_url,
+          thumbnail_url: event.thumbnail_url,
+          created_by: event.created_by,
+        });
+
+        // Then add creator data - handle both array and single object cases
+        const username =
+          event.users?.[0]?.username ||
+          (typeof event.users === "object" && !Array.isArray(event.users)
+            ? event.users.username
+            : null) ||
+          "Unknown";
+
         timelineEvent.creator = {
-          username: event.users?.username || "Unknown",
+          username,
         };
+
+        console.log("Transformed event:", timelineEvent);
         return timelineEvent;
       });
 
       return { data: timelineEvents, status: 200 };
     } catch (error) {
-      //   console.error("Error fetching historic events:", error);
+      console.error("Error fetching historic events with user data:", error);
       return {
         error: "Failed to fetch historic events",
         status: 500,

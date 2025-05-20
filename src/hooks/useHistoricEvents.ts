@@ -1,12 +1,12 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { TimelineEvent } from "@/types";
-import { HistoricEventController } from "../../backend/controllers/HistoricEventController.ts";
+import { HistoricEventController } from "../../backend/controllers/HistoricEventController";
 import { toast } from "@/components/ui/use-toast";
 
 /**
  * Custom hook for managing historic events
  */
-export function useHistoricEvents() {
+export const useHistoricEvents = (isAdminView: boolean = false) => {
   const [events, setEvents] = useState<TimelineEvent[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -14,12 +14,7 @@ export function useHistoricEvents() {
   // Use a ref to track if loadEvents is already running, preventing duplicate calls
   const loadingRef = useRef(false);
 
-  const controller = new HistoricEventController();
-
-  /**
-   * Load all events from the API
-   */
-  const loadEvents = async () => {
+  const loadEvents = useCallback(async () => {
     // Prevent duplicate calls if already loading
     if (loadingRef.current) {
       return;
@@ -30,21 +25,26 @@ export function useHistoricEvents() {
     setError(null);
 
     try {
-      const response = await controller.getAllEvents();
+      const controller = new HistoricEventController();
+      const response = isAdminView
+        ? await controller.getAllEventsWithUserData()
+        : await controller.getAllEvents();
 
       if (response.error) {
         setError(response.error);
-      } else if (response.data) {
+        return;
+      }
+
+      if (response.data) {
         setEvents(response.data);
       }
     } catch (err) {
-      setError("An unexpected error occurred");
-      console.error("Error loading events:", err);
+      setError(err instanceof Error ? err.message : "Failed to load events");
     } finally {
       setIsLoading(false);
       loadingRef.current = false;
     }
-  };
+  }, [isAdminView]);
 
   /**
    * Create a new event
@@ -56,6 +56,7 @@ export function useHistoricEvents() {
     setError(null);
 
     try {
+      const controller = new HistoricEventController();
       const response = await controller.createEvent(event);
 
       if (response.error) {
@@ -86,6 +87,7 @@ export function useHistoricEvents() {
     setError(null);
 
     try {
+      const controller = new HistoricEventController();
       const response = await controller.updateEvent(id, event);
 
       if (response.error) {
@@ -117,6 +119,7 @@ export function useHistoricEvents() {
 
     try {
       console.log("Starting delete operation for event:", id);
+      const controller = new HistoricEventController();
       const response = await controller.deleteEvent(id);
       console.log("Delete response:", response);
 
@@ -172,4 +175,4 @@ export function useHistoricEvents() {
     updateEvent,
     deleteEvent,
   };
-}
+};
