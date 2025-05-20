@@ -124,7 +124,17 @@ const EventList = () => {
           Showing {startIndex + 1}-{Math.min(endIndex, filteredEvents.length)} of{" "}
           {filteredEvents.length} events
         </div>
+
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(1)}
+            disabled={currentPage === 1}
+            className="ml-2"
+          >
+            First Page
+          </Button>
           <Button
             variant="outline"
             size="sm"
@@ -143,6 +153,15 @@ const EventList = () => {
             disabled={currentPage === totalPages}
           >
             <ChevronRight size={16} />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage === totalPages}
+            className="ml-2"
+          >
+            Last Page
           </Button>
         </div>
       </div>
