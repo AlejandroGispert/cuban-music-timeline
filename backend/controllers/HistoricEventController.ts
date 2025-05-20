@@ -13,74 +13,40 @@ export class HistoricEventController {
     try {
       console.log("Fetching all events from Supabase...");
 
-      // First, let's check if we can access the table
-      const { count, error: countError } = await supabase
-        .from("historic_events")
-        .select("*", { count: "exact", head: true });
-
-      // Now fetch the actual data with user information
+      // Fetch events with user data in a single query using join
       const { data, error } = await supabase
         .from("historic_events")
-        .select("*")
+        .select(
+          `
+          *,
+          users!created_by (
+            username
+          )
+        `
+        )
         .order("year", { ascending: true });
 
       if (error) {
-        console.error("Supabase fetch error:", error);
+        // console.error("Supabase fetch error:", error);
         return { error: "Failed to fetch events", status: 500 };
       }
 
-      console.log("Number of events:", data?.length);
-
-      // Get unique creator IDs
-      const creatorIds = [...new Set(data?.map(event => event.created_by))];
-      console.log("Creator IDs:", creatorIds);
-      console.log(
-        "Raw creator IDs from events:",
-        data?.map(event => event.created_by)
-      );
-
-      // First, let's try to fetch a single user to verify the ID
-      const { data: singleUser, error: singleUserError } = await supabase
-        .from("users")
-        .select("id, username")
-        .eq("id", "609b80de-28a1-4a45-a900-924c44a8e0ed")
-        .single();
-
-      console.log("Single user test:", { singleUser, singleUserError });
-
-      // Now try the bulk fetch
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("id, username")
-        .in("id", creatorIds);
-
-      console.log("User data response:", userData);
-      console.log("User error:", userError);
-
-      if (userError) {
-        console.error("Error fetching users:", userError);
-        return { error: "Failed to fetch user data", status: 500 };
+      if (!data?.length) {
+        return { data: [], status: 200 };
       }
 
-      // Create a map of user IDs to usernames
-      const userMap = new Map(userData?.map(user => [user.id, user.username]) || []);
-      console.log("User map:", Object.fromEntries(userMap));
-      console.log("Raw user data:", userData);
-
+      // Transform events with user data
       const timelineEvents = data.map(event => {
         const timelineEvent = HistoricEventModel.toTimelineEvent(event);
-        // Add creator information
-        const username = userMap.get(event.created_by);
-        console.log(`Looking up username for ${event.created_by}:`, username);
         timelineEvent.creator = {
-          username: username || "Unknown",
+          username: event.users?.username || "Unknown",
         };
         return timelineEvent;
       });
 
       return { data: timelineEvents, status: 200 };
     } catch (error) {
-      console.error("Error fetching historic events:", error);
+      //   console.error("Error fetching historic events:", error);
       return {
         error: "Failed to fetch historic events",
         status: 500,
@@ -210,12 +176,12 @@ export class HistoricEventController {
         };
       }
 
-      console.log("Current user session:", {
-        userId: session.user.id,
-        role: session.user.user_metadata?.role,
-        email: session.user.email,
-      });
-      console.log("Attempting to delete event with ID:", id);
+      //   console.log("Current user session:", {
+      //    userId: session.user.id,
+      //role: session.user.user_metadata?.role,
+      //   email: session.user.email,
+      //});
+      //  console.log("Attempting to delete event with ID:", id);
 
       // First check if the event exists and get its details
       const { data: existingEvent, error: checkError } = await supabase
@@ -224,10 +190,10 @@ export class HistoricEventController {
         .eq("id", id)
         .single();
 
-      console.log("Existing event check:", { existingEvent, checkError });
+      //      console.log("Existing event check:", { existingEvent, checkError });
 
       if (checkError) {
-        console.error("Error checking event existence:", checkError);
+        //   console.error("Error checking event existence:", checkError);
         return {
           error: "Event not found",
           status: 404,
@@ -238,13 +204,13 @@ export class HistoricEventController {
       const isAdmin = session.user.user_metadata?.role === "admin";
       const isOwner = existingEvent.created_by === session.user.id;
 
-      console.log("Permission check:", {
-        isAdmin,
-        isOwner,
-        userId: session.user.id,
-        eventCreator: existingEvent.created_by,
-        eventId: id,
-      });
+      //     console.log("Permission check:", {
+      //     isAdmin,
+      //   isOwner,
+      // userId: session.user.id,
+      //eventCreator: existingEvent.created_by,
+      //eventId: id,
+      //});
 
       if (!isAdmin && !isOwner) {
         return {
@@ -286,11 +252,11 @@ export class HistoricEventController {
         .eq("id", id)
         .maybeSingle();
 
-      console.log("Verification after delete:", {
-        verifyEvent,
-        verifyError,
-        eventStillExists: !!verifyEvent,
-      });
+      //   console.log("Verification after delete:", {
+      //    verifyEvent,
+      //    verifyError,
+      //    eventStillExists: !!verifyEvent,
+      //  });
 
       if (verifyEvent) {
         console.error("Event still exists after delete attempt:", verifyEvent);
