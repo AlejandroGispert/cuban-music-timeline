@@ -21,14 +21,7 @@ export class HistoricEventController {
       // Now fetch the actual data with user information
       const { data, error } = await supabase
         .from("historic_events")
-        .select(
-          `
-          *,
-          users!created_by (
-            username
-          )
-        `
-        )
+        .select("*")
         .order("year", { ascending: true });
 
       if (error) {
@@ -38,11 +31,49 @@ export class HistoricEventController {
 
       console.log("Number of events:", data?.length);
 
+      // Get unique creator IDs
+      const creatorIds = [...new Set(data?.map(event => event.created_by))];
+      console.log("Creator IDs:", creatorIds);
+      console.log(
+        "Raw creator IDs from events:",
+        data?.map(event => event.created_by)
+      );
+
+      // First, let's try to fetch a single user to verify the ID
+      const { data: singleUser, error: singleUserError } = await supabase
+        .from("users")
+        .select("id, username")
+        .eq("id", "609b80de-28a1-4a45-a900-924c44a8e0ed")
+        .single();
+
+      console.log("Single user test:", { singleUser, singleUserError });
+
+      // Now try the bulk fetch
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select("id, username")
+        .in("id", creatorIds);
+
+      console.log("User data response:", userData);
+      console.log("User error:", userError);
+
+      if (userError) {
+        console.error("Error fetching users:", userError);
+        return { error: "Failed to fetch user data", status: 500 };
+      }
+
+      // Create a map of user IDs to usernames
+      const userMap = new Map(userData?.map(user => [user.id, user.username]) || []);
+      console.log("User map:", Object.fromEntries(userMap));
+      console.log("Raw user data:", userData);
+
       const timelineEvents = data.map(event => {
         const timelineEvent = HistoricEventModel.toTimelineEvent(event);
         // Add creator information
+        const username = userMap.get(event.created_by);
+        console.log(`Looking up username for ${event.created_by}:`, username);
         timelineEvent.creator = {
-          username: event.users?.username,
+          username: username || "Unknown",
         };
         return timelineEvent;
       });
