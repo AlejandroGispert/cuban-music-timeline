@@ -26,50 +26,6 @@ const AdminPage = () => {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const loadCalled = useRef(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const translateElementRef = useRef<HTMLDivElement>(null);
-
-  // Initialize Google Translate
-  useEffect(() => {
-    // Create a script element
-    const script = document.createElement("script");
-    script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-    script.async = true;
-
-    // Define the initialization function
-    window.googleTranslateElementInit = function () {
-      const element = document.getElementById("google_translate_element");
-      if (!element) return;
-
-      try {
-        // @ts-expect-error - Google Translate types are not available
-        new window.google.translate.TranslateElement(
-          {
-            pageLanguage: "en",
-            includedLanguages: "es,en",
-            layout: 0, // SIMPLE
-            autoDisplay: false,
-          },
-          "google_translate_element"
-        );
-      } catch (error) {
-        console.error("Error initializing Google Translate:", error);
-      }
-    };
-
-    // Add error handling
-    script.onerror = error => {
-      console.error("Error loading Google Translate script:", error);
-    };
-
-    // Add the script to the document
-    document.body.appendChild(script);
-
-    return () => {
-      // Cleanup
-      window.googleTranslateElementInit = function () {};
-      script.remove();
-    };
-  }, []);
 
   // Load events on mount, only once
   useEffect(() => {
@@ -142,6 +98,13 @@ const AdminPage = () => {
 
   const handleEdit = (event: TimelineEvent) => {
     setEditingEvent({ ...event });
+    // Scroll to the form with a small delay to ensure it's rendered
+    setTimeout(() => {
+      const formElement = document.querySelector('[data-card="event-form"]');
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
   };
 
   const handleConfirmDelete = (id: string) => {
@@ -194,7 +157,7 @@ const AdminPage = () => {
         </div>
       </div>
       <div>
-        <Card className="w-full max-w-6xl mx-auto mb-8">
+        <Card className="w-full max-w-6xl mx-auto mb-8" data-card="event-form">
           <CardHeader>
             <CardTitle className="text-2xl">
               {editingEvent?.id ? "Edit Event" : "Add New Historic Event"}
@@ -217,13 +180,6 @@ const AdminPage = () => {
         open={showConfirmDelete}
         onCancel={() => setShowConfirmDelete(false)}
         onConfirm={handleDelete}
-      />
-
-      {/* Add Google Translate element */}
-      <div
-        id="google_translate_element"
-        ref={translateElementRef}
-        className="fixed bottom-4 right-4 z-50"
       />
     </div>
   );
