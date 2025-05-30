@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { supabase } from "../../integrations/supabase/client";
+import { supabase } from "../../src/lib/supabase";
 
 // Password validation
 const passwordSchema = z

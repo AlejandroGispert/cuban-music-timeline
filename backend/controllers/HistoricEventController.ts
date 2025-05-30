@@ -1,6 +1,6 @@
 import { TimelineEvent } from "@/types";
 import { HistoricEventModel } from "../models/HistoricEventModel";
-import { supabase } from "../../integrations/supabase/client";
+import { supabase } from "../../src/lib/supabase";
 
 interface ApiResponse<T> {
   data?: T;

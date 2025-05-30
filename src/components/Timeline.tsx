@@ -8,6 +8,10 @@ import TimelineZoomControls from "./TimelineZoomControls";
 import { useHistoricEvents } from "@/hooks/useHistoricEvents";
 import { yearRange } from "@/constants/filters";
 
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { History } from "lucide-react";
+
 const Timeline = () => {
   const { events, loadEvents, isLoading, error } = useHistoricEvents();
 
@@ -29,7 +33,7 @@ const Timeline = () => {
   // Load events only once
   useEffect(() => {
     loadEvents();
-  }, []);
+  }, [loadEvents]);
 
   // Memoized filtered & sorted events
   const filteredEvents = useMemo(() => {
@@ -43,17 +47,31 @@ const Timeline = () => {
             ? JSON.parse(event.style)
             : [];
 
+        // Early return if no styles match when styles filter is active
         if (
           filterOptions.styles.length > 0 &&
           !filterOptions.styles.some(style => eventStyles.includes(style))
-        )
+        ) {
           return false;
-        if (event.year < filterOptions.yearRange[0] || event.year > filterOptions.yearRange[1])
+        }
+
+        // Early return if year is out of range
+        if (event.year < filterOptions.yearRange[0] || event.year > filterOptions.yearRange[1]) {
           return false;
-        if (filterOptions.provinces.length > 0 && !filterOptions.provinces.includes(event.province))
+        }
+
+        // Early return if province doesn't match when provinces filter is active
+        if (
+          filterOptions.provinces.length > 0 &&
+          !filterOptions.provinces.includes(event.province)
+        ) {
           return false;
-        if (filterOptions.cities.length > 0 && !filterOptions.cities.includes(event.city))
+        }
+
+        // Early return if city doesn't match when cities filter is active
+        if (filterOptions.cities.length > 0 && !filterOptions.cities.includes(event.city)) {
           return false;
+        }
 
         return true;
       })
@@ -133,6 +151,15 @@ const Timeline = () => {
         videoUrl={selectedVideoUrl}
         clearVideo={() => setSelectedVideoUrl(undefined)}
       />
+      <Link to="/ai-history">
+        <Button
+          variant="outline"
+          className="flex items-center gap-2 border-cuba-blue text-cuba-blue hover:bg-cuba-blue/10"
+        >
+          <History size={16} />
+          AI History Mode
+        </Button>
+      </Link>
 
       <div className="relative pt-16 pb-20">
         {isLoading ? (

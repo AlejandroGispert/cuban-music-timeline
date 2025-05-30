@@ -1,7 +1,7 @@
 // src/models/AuthModel.ts
 
 import { User } from "@/types";
-import { supabase } from "../../integrations/supabase/client";
+import { supabase } from "../../src/lib/supabase";
 
 export interface SignupPayload {
   email: string;

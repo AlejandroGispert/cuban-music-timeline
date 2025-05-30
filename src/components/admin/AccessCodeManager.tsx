@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../../../integrations/supabase/client"; // adjust path as needed
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";

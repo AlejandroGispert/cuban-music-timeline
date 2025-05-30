@@ -10,7 +10,7 @@ import {
 } from "@/services/authService";
 import { User, AuthState } from "@/types";
 import { AuthModel } from "../../backend/models/AuthModel";
-import { supabase } from "../../integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthState>({

@@ -9,7 +9,7 @@ import {
   Route,
 } from "react-router-dom";
 import ErrorBoundary from "@/components/ErrorBoundary";
-
+import AIHistoryMode from "./pages/AIHistoryMode";
 import Index from "./pages/Index";
 import MapView from "./pages/MapView";
 import AdminPage from "./pages/AdminPage";
@@ -27,6 +27,7 @@ const router = createBrowserRouter(
     <Route errorElement={<ErrorBoundary />}>
       <Route path="/" element={<Index />} />
       <Route path="/map" element={<MapView />} />
+      <Route path="/ai-history" element={<AIHistoryMode />} />
       <Route
         path="/admin"
         element={
