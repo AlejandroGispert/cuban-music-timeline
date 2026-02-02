@@ -43,21 +43,21 @@ export const allMusicStyles: string[] = [
 ];
 
 export const allProvinces: string[] = [
-  "Pinar del Río",
+  "Pinar del Rio",
   "Artemisa",
   "La Habana",
   "Mayabeque",
   "Matanzas",
   "Villa Clara",
   "Cienfuegos",
-  "Sancti Spíritus",
-  "Ciego de Ávila",
-  "Camagüey",
+  "Sancti Spiritus",
+  "Ciego de Avila",
+  "Camaguey",
   "Las Tunas",
-  "Holguín",
+  "Holguin",
   "Granma",
   "Santiago de Cuba",
-  "Guantánamo",
+  "Guantanamo",
   "Isla de la Juventud",
 ];
 

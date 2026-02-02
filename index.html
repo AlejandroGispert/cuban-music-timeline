@@ -20,7 +20,10 @@
       window.googlefc = window.googlefc || {};
       window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
     </script>
-    <script async src="https://fundingchoicesmessages.google.com/i/pub-5806299023049544?ers=1"></script>
+    <script
+      async
+      src="https://fundingchoicesmessages.google.com/i/pub-5806299023049544?ers=1"
+    ></script>
     <script>
       // Signal Funding Choices presence (required by the tag).
       (function () {
@@ -96,7 +99,11 @@
 
               // Load Umami only if analytics consent is granted (or not applicable/configured).
               if (analyticsConsent === "granted") {
-                if (!document.querySelector('script[data-website-id="bc9f0a35-857e-4d5b-b5ce-1bdb999fce77"]')) {
+                if (
+                  !document.querySelector(
+                    'script[data-website-id="bc9f0a35-857e-4d5b-b5ce-1bdb999fce77"]'
+                  )
+                ) {
                   var umami = document.createElement("script");
                   umami.defer = true;
                   umami.src = "https://cloud.umami.is/script.js";

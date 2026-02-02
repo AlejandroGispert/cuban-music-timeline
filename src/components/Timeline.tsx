@@ -8,6 +8,14 @@ import TimelineZoomControls from "./TimelineZoomControls";
 import { useHistoricEvents } from "@/hooks/useHistoricEvents";
 import { yearRange } from "@/constants/filters";
 
+function normalizeName(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .trim();
+}
+
 const Timeline = () => {
   const { events, loadEvents, isLoading, error } = useHistoricEvents();
 
@@ -57,11 +65,9 @@ const Timeline = () => {
         }
 
         // Early return if province doesn't match when provinces filter is active
-        if (
-          filterOptions.provinces.length > 0 &&
-          !filterOptions.provinces.includes(event.province)
-        ) {
-          return false;
+        if (filterOptions.provinces.length > 0) {
+          const selected = new Set(filterOptions.provinces.map(normalizeName));
+          if (!selected.has(normalizeName(event.province))) return false;
         }
 
         // Early return if city doesn't match when cities filter is active

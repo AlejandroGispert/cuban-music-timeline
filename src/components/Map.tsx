@@ -5,17 +5,49 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import CubaMap, { CubaMapRef } from "@/components/CubaMap";
 import { useHistoricEvents } from "@/hooks/useHistoricEvents";
+import AdSenseUnit from "@/components/AdSenseUnit";
+import { allProvinces as CUBAN_PROVINCES } from "@/constants/filters";
 
-const Map = () => {
+function normalizeName(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .trim();
+}
+
+const CUBAN_PROVINCE_BY_NORMALIZED = new Map(
+  CUBAN_PROVINCES.map(p => [normalizeName(p), p] as const)
+);
+
+const CUBAN_PROVINCES_SORTED = [...CUBAN_PROVINCES].sort((a, b) => a.localeCompare(b, "es"));
+
+function toCubanProvince(rawProvince: string | null | undefined): string | null {
+  if (!rawProvince) return null;
+
+  const normalized = normalizeName(rawProvince);
+  const direct = CUBAN_PROVINCE_BY_NORMALIZED.get(normalized);
+  if (direct) return direct;
+
+  // Common variants/aliases that show up in data.
+  if (normalized === "habana" || normalized === "havana" || normalized === "la habana") {
+    return "La Habana";
+  }
+  if (normalized === "guantanmo") {
+    return "Guantanamo";
+  }
+
+  return null;
+}
+
+const MapPage = () => {
   const navigate = useNavigate();
   const { events, loadEvents } = useHistoricEvents();
   const loadEventsCalled = useRef(false);
   const mapRef = useRef<CubaMapRef>(null);
 
   const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
-  const [hoveredProvince, setHoveredProvince] = useState<string | null>(null);
   const [eventCounts, setEventCounts] = useState<Record<string, number>>({});
-  const [allProvinces, setAllProvinces] = useState<string[]>([]);
   const [allCities, setAllCities] = useState<string[]>([]);
 
   // Load events once
@@ -31,20 +63,20 @@ const Map = () => {
     if (!events?.length) return;
 
     const counts: Record<string, number> = {};
-    const provincesSet = new Set<string>();
     const citiesSet = new Set<string>();
 
     for (const event of events) {
-      const province = event.province;
-      const city = event.city;
-      provincesSet.add(province);
-      citiesSet.add(city);
+      const province = toCubanProvince(event.province);
+      if (!province) continue;
+
+      const city = event.city?.trim();
+      if (city) citiesSet.add(city);
+
       counts[province] = (counts[province] || 0) + 1;
     }
 
     setEventCounts(counts);
-    setAllProvinces([...provincesSet].sort());
-    setAllCities([...citiesSet].sort());
+    setAllCities([...citiesSet].sort((a, b) => a.localeCompare(b, "es")));
   }, [events]);
 
   // Handle province click
@@ -79,15 +111,13 @@ const Map = () => {
           <div className="px-4 md:px-0">
             <h3 className="text-lg font-medium mb-4">Provinces</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {allProvinces.map(province => (
+              {CUBAN_PROVINCES_SORTED.map(province => (
                 <Card
                   key={province}
                   className={`cursor-pointer transition-all ${
                     selectedProvince === province ? "border-cuba-blue shadow-md" : "border-gray-200"
                   }`}
                   onClick={() => handleProvinceClick(province)}
-                  onMouseEnter={() => setHoveredProvince(province)}
-                  onMouseLeave={() => selectedProvince !== province && setHoveredProvince(null)}
                 >
                   <CardContent className="p-4 flex items-center justify-between">
                     <div>
@@ -122,11 +152,9 @@ const Map = () => {
 
       {/* Musical Region Highlights */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-3 bg-gray-100 p-4 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center mb-6">
-          <div className="text-gray-500 text-center">
-            <p className="font-medium">Advertisement Banner</p>
-            <p className="text-xs">728x90 banner ad space</p>
-          </div>
+        {/* banner-map-bottom */}
+        <div className="md:col-span-3 mb-6 px-4 md:px-0">
+          <AdSenseUnit slot="4273706630" />
         </div>
 
         {/* Regions */}
@@ -188,4 +216,4 @@ const Map = () => {
   );
 };
 
-export default Map;
+export default MapPage;

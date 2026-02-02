@@ -15,9 +15,7 @@ type AdSenseUnitProps = {
 };
 
 function ensureAdSenseScriptLoaded() {
-  const existing = document.querySelector<HTMLScriptElement>(
-    `script[src="${ADSENSE_SCRIPT_SRC}"]`
-  );
+  const existing = document.querySelector<HTMLScriptElement>(`script[src="${ADSENSE_SCRIPT_SRC}"]`);
   if (existing) return;
 
   const script = document.createElement("script");
