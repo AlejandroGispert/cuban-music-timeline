@@ -1,0 +1,12 @@
+---
+description: Keep CHANGELOG.md updated on every change
+alwaysApply: true
+---
+
+# Changelog rule
+
+Whenever you make a code/config/docs change in this repo, also update `CHANGELOG.md` under `## [Unreleased]`.
+
+- Use Keep a Changelog headings: `Added`, `Changed`, `Fixed`, `Removed` (as applicable).
+- Prefer short, user-facing bullets (what changed + why), not implementation details.
+- If a change impacts analytics/consent/privacy, explicitly mention it.
