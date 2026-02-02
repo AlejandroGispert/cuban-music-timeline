@@ -8,10 +8,6 @@ import TimelineZoomControls from "./TimelineZoomControls";
 import { useHistoricEvents } from "@/hooks/useHistoricEvents";
 import { yearRange } from "@/constants/filters";
 
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { History } from "lucide-react";
-
 const Timeline = () => {
   const { events, loadEvents, isLoading, error } = useHistoricEvents();
 
@@ -151,15 +147,6 @@ const Timeline = () => {
         videoUrl={selectedVideoUrl}
         clearVideo={() => setSelectedVideoUrl(undefined)}
       />
-      <Link to="/ai-history">
-        <Button
-          variant="outline"
-          className="flex items-center gap-2 border-cuba-blue text-cuba-blue hover:bg-cuba-blue/10"
-        >
-          <History size={16} />
-          AI History Mode
-        </Button>
-      </Link>
 
       <div className="relative pt-16 pb-20">
         {isLoading ? (
