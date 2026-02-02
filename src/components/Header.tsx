@@ -87,8 +87,7 @@ const Header = () => {
             Map
           </Link>
           <Button
-            variant="outline"
-            className="border-cuba-gold text-cuba-gold hover:bg-cuba-gold/10 hover:text-cuba-gold"
+            className="bg-gradient-to-r from-cuba-red to-cuba-blue text-white font-medium shadow-sm hover:opacity-90"
             onClick={handleSupportClick}
           >
             Support Us
@@ -153,8 +152,7 @@ const Header = () => {
               Map
             </Link>
             <Button
-              variant="outline"
-              className="border-cuba-gold text-cuba-gold hover:bg-cuba-gold/10"
+              className="bg-gradient-to-r from-cuba-red to-cuba-blue text-white font-medium hover:opacity-90"
               onClick={handleSupportClick}
             >
               Support Us

@@ -1,6 +1,18 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { AdDialog } from "@/components/AdDialog";
 
 const Footer = () => {
+  const [isAdDialogOpen, setIsAdDialogOpen] = useState(false);
+
+  const openPrivacySettings = () => {
+    if (window.googlefc?.showRevocationMessage) {
+      window.googlefc.showRevocationMessage();
+      return;
+    }
+    console.warn("Privacy & messaging is not ready yet.");
+  };
+
   return (
     <footer className="bg-white border-t mt-12">
       <div className="container mx-auto px-4 py-8">
@@ -38,7 +50,22 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <button className="text-gray-600 hover:text-cuba-red text-sm">Support Us</button>
+                <button
+                  type="button"
+                  className="text-gray-600 hover:text-cuba-red text-sm"
+                  onClick={() => setIsAdDialogOpen(true)}
+                >
+                  Support Us
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  className="text-gray-600 hover:text-cuba-red text-sm"
+                  onClick={openPrivacySettings}
+                >
+                  Privacy &amp; cookie settings
+                </button>
               </li>
             </ul>
           </div>
@@ -67,6 +94,8 @@ const Footer = () => {
           </p>
         </div>
       </div>
+
+      <AdDialog open={isAdDialogOpen} onOpenChange={setIsAdDialogOpen} />
     </footer>
   );
 };

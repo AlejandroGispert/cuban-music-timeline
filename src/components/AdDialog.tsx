@@ -1,10 +1,11 @@
-
-import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
+import AdSenseUnit from "@/components/AdSenseUnit";
 
 export const AdDialog = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) => {
+  const supportSlot = (import.meta.env.VITE_ADSENSE_SUPPORT_SLOT || "8815092031").trim();
+
   const handleSupportClick = () => {
     toast("Thank you for your support!", {
       description: "Your support helps us continue documenting Cuban music history."
@@ -22,22 +23,18 @@ export const AdDialog = ({ open, onOpenChange }: { open: boolean; onOpenChange: 
           </DialogDescription>
         </DialogHeader>
         
-        <div className="ad-container ad-large mx-auto my-6 p-6 min-h-[350px]">
-          <div className="flex flex-col items-center justify-center h-full">
-            <p className="font-medium text-gray-500 text-lg">Advertisement</p>
-            <p className="text-sm text-gray-400">500x350</p>
-            <p className="text-base mt-4 text-cuba-gold font-medium">Support our project by viewing our sponsors</p>
-            <div className="mt-4 w-24 h-24 animate-pulse-subtle bg-cuba-gold/20 rounded-full flex items-center justify-center">
-              <span className="text-cuba-gold">Ad</span>
-            </div>
-          </div>
+        <div className="ad-container ad-large mx-auto my-6 p-4 min-h-[250px]">
+          <AdSenseUnit slot={supportSlot} />
         </div>
         
         <div className="flex justify-between mt-6">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Close
           </Button>
-          <Button className="bg-cuba-gold hover:bg-cuba-gold/80 text-black font-medium" onClick={handleSupportClick}>
+          <Button
+            className="bg-gradient-to-r from-cuba-red to-cuba-blue text-white font-medium hover:opacity-90"
+            onClick={handleSupportClick}
+          >
             Support Us
           </Button>
         </div>

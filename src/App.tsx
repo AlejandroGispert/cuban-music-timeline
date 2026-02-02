@@ -16,9 +16,6 @@ import NotFound from "./pages/NotFound";
 import Authentication from "./pages/Authentication";
 import AuthGuard from "@/components/AuthGuard";
 
-// ✅ Import the consent banner component
-import ConsentBanner from "@/components/ConsentBanner";
-
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter(
@@ -50,7 +47,6 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <ConsentBanner />
       <RouterProvider router={router} />
     </TooltipProvider>
   </QueryClientProvider>

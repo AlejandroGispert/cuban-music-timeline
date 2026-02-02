@@ -1,19 +1,17 @@
 import Header from "@/components/Header";
 import Map from "@/components/Map";
 import Footer from "@/components/Footer";
+import AdSenseUnit from "@/components/AdSenseUnit";
 
 const MapView = () => {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1 py-8">
-        {/* Top Leaderboard Ad */}
+        {/* map-banner-top */}
         <div className="container mx-auto px-0 md:px-4 mb-8">
-          <div className="bg-gray-100 p-4 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
-            <div className="text-gray-500 text-center">
-              <p className="font-medium">Advertisement</p>
-              <p className="text-xs">728x90 banner ad space</p>
-            </div>
+          <div className="px-4 md:px-0">
+            <AdSenseUnit slot="3949778163" />
           </div>
         </div>
 
